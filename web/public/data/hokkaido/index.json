@@ -1,0 +1,128 @@
+[
+ {
+  "id": "tokachi",
+  "name": "十勝岳 62-2火口周辺",
+  "lat": 43.418,
+  "lon": 142.686,
+  "rows": 253,
+  "cols": 251,
+  "nulls": 0
+ },
+ {
+  "id": "asahidake",
+  "name": "大雪山 旭岳",
+  "lat": 43.6636,
+  "lon": 142.8544,
+  "rows": 253,
+  "cols": 250,
+  "nulls": 0
+ },
+ {
+  "id": "ohachidaira",
+  "name": "大雪山 御鉢平カルデラ",
+  "lat": 43.678,
+  "lon": 142.882,
+  "rows": 253,
+  "cols": 250,
+  "nulls": 0
+ },
+ {
+  "id": "hakuun",
+  "name": "大雪山 小泉岳〜白雲岳 高山荒原",
+  "lat": 43.651,
+  "lon": 142.905,
+  "rows": 253,
+  "cols": 250,
+  "nulls": 0
+ },
+ {
+  "id": "showashinzan",
+  "name": "昭和新山",
+  "lat": 42.5428,
+  "lon": 140.8642,
+  "rows": 253,
+  "cols": 255,
+  "nulls": 0.299
+ },
+ {
+  "id": "usu",
+  "name": "有珠山 山頂火口原",
+  "lat": 42.5436,
+  "lon": 140.8389,
+  "rows": 253,
+  "cols": 255,
+  "nulls": 0.361
+ },
+ {
+  "id": "tarumae",
+  "name": "樽前山 溶岩ドーム",
+  "lat": 42.6906,
+  "lon": 141.3772,
+  "rows": 253,
+  "cols": 254,
+  "nulls": 0.155
+ },
+ {
+  "id": "meakan",
+  "name": "雌阿寒岳",
+  "lat": 43.3864,
+  "lon": 144.0086,
+  "rows": 253,
+  "cols": 251,
+  "nulls": 0.023
+ },
+ {
+  "id": "shiretoko",
+  "name": "知床硫黄山",
+  "lat": 44.133,
+  "lon": 145.161,
+  "rows": 253,
+  "cols": 248,
+  "nulls": 0.352
+ },
+ {
+  "id": "atosanupuri",
+  "name": "アトサヌプリ（硫黄山）",
+  "lat": 43.61,
+  "lon": 144.439,
+  "rows": 253,
+  "cols": 251,
+  "nulls": 0.153
+ },
+ {
+  "id": "komagatake",
+  "name": "北海道駒ヶ岳",
+  "lat": 42.063,
+  "lon": 140.677,
+  "rows": 253,
+  "cols": 257,
+  "nulls": 0.244
+ },
+ {
+  "id": "mashu",
+  "name": "摩周カルデラ",
+  "lat": 43.572,
+  "lon": 144.561,
+  "rows": 253,
+  "cols": 251,
+  "nulls": 0.038
+ },
+ {
+  "id": "shikaribetsu",
+  "name": "然別 風穴地帯（概略位置）",
+  "lat": 43.255,
+  "lon": 143.075,
+  "rows": 253,
+  "cols": 252,
+  "nulls": 0
+ },
+ {
+  "id": "noboribetsu",
+  "name": "登別 地獄谷",
+  "lat": 42.4975,
+  "lon": 141.1475,
+  "rows": 253,
+  "cols": 255,
+  "nulls": 0.172
+ }
+]

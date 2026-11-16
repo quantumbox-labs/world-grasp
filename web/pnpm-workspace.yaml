@@ -1,0 +1,5 @@
+# pnpm settings for web/ (pnpm ≥ 10 reads them here, not from package.json).
+# Only install versions published at least 2 days ago (supply-chain policy).
+minimumReleaseAge: 2880
+allowBuilds:
+  esbuild: true

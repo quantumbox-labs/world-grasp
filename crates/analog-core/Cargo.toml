@@ -1,0 +1,10 @@
+[package]
+name = "analog-core"
+description = "Scoring, geodesy and EVA route logic shared by the web (WASM) and desktop (Tauri) builds"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true

@@ -1,0 +1,2 @@
+# pnpm settings for the repo root (Tauri CLI only). web/ has its own workspace file.
+minimumReleaseAge: 2880

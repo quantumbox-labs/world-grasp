@@ -1,0 +1,185 @@
+[
+ {
+  "id": "mons_mouton",
+  "world": "moon",
+  "name": "Mons Mouton Plateau",
+  "ja": "モンス・ムートン台地（南極）",
+  "lat": -85.43,
+  "lon": 31.74,
+  "kind": "Artemis III 候補（2024 の9地域）",
+  "task": [
+   "landing",
+   "ice",
+   "polar"
+  ],
+  "tmin": 76,
+  "tmax": 252,
+  "slope_mean_deg": 8,
+  "oxides": "lunar_highland",
+  "src": "A3_Named_regions centroid; Diviner tbol; slope: Artemis landing limit ~8–10°"
+ },
+ {
+  "id": "malapert",
+  "world": "moon",
+  "name": "Malapert Massif",
+  "ja": "マラパート山塊（南極）",
+  "lat": -85.99,
+  "lon": -0.24,
+  "kind": "Artemis III 候補",
+  "task": [
+   "landing",
+   "polar"
+  ],
+  "tmin": 75,
+  "tmax": 296,
+  "slope_mean_deg": 12,
+  "oxides": "lunar_highland",
+  "src": "A3_Named_regions centroid; Diviner tbol; massif flanks steeper (approx.)"
+ },
+ {
+  "id": "shackleton",
+  "world": "moon",
+  "name": "Shackleton (floor, PSR)",
+  "ja": "シャクルトン・クレーター（永久影）",
+  "lat": -89.63,
+  "lon": 132.32,
+  "kind": "永久影・水氷",
+  "task": [
+   "ice"
+  ],
+  "tmin": 42,
+  "tmax": 91,
+  "slope_mean_deg": 15,
+  "oxides": "lunar_highland",
+  "src": "Trek place names; Diviner tbol"
+ },
+ {
+  "id": "marius",
+  "world": "moon",
+  "name": "Marius Hills Hole",
+  "ja": "マリウス丘の縦穴（かぐや発見）",
+  "lat": 14.09,
+  "lon": -56.77,
+  "kind": "溶岩チューブ天窓（JAXA SELENE）",
+  "task": [
+   "caves",
+   "base"
+  ],
+  "tmin": 97,
+  "tmax": 392,
+  "slope_mean_deg": 4,
+  "oxides": "lunar_mare_basalt",
+  "src": "Haruyama et al. 2009; Kaku et al. 2017; Diviner tbol"
+ },
+ {
+  "id": "compton",
+  "world": "moon",
+  "name": "Compton–Belkovich",
+  "ja": "コンプトン・ベルコビッチ（珪長質ドーム）",
+  "lat": 61,
+  "lon": 99.5,
+  "kind": "珪長質火山",
+  "task": [
+   "geology"
+  ],
+  "tmin": 90,
+  "tmax": 330,
+  "slope_mean_deg": 12,
+  "oxides": "lunar_silicic",
+  "approx": true,
+  "src": "Jolliff et al. 2011 (silicic volcanism); temps approx. for 61°N"
+ },
+ {
+  "id": "arcadia",
+  "world": "mars",
+  "name": "Arcadia Planitia",
+  "ja": "アルカディア平原",
+  "lat": 47.19,
+  "lon": -175.69,
+  "kind": "有人着陸の有力候補（浅部地下氷）",
+  "task": [
+   "ice",
+   "landing"
+  ],
+  "tmin": 150,
+  "tmax": 250,
+  "slope_mean_deg": 2,
+  "oxides": "mars_basalt",
+  "approx": true,
+  "src": "SWIM; Bramson et al. 2015; temps: literature range"
+ },
+ {
+  "id": "deuteronilus",
+  "world": "mars",
+  "name": "Deuteronilus Mensae",
+  "ja": "デウテロニルス台地（氷河地形）",
+  "lat": 45.11,
+  "lon": 23.92,
+  "kind": "有人探査地域候補",
+  "task": [
+   "ice"
+  ],
+  "tmin": 150,
+  "tmax": 250,
+  "slope_mean_deg": 10,
+  "oxides": "mars_basalt",
+  "approx": true,
+  "src": "First Landing Site Workshop 2015 EZ list"
+ },
+ {
+  "id": "jezero",
+  "world": "mars",
+  "name": "Jezero Crater",
+  "ja": "ジェゼロ・クレーター",
+  "lat": 18.41,
+  "lon": 77.69,
+  "kind": "Perseverance・古湖デルタ",
+  "task": [
+   "astrobio",
+   "traverse"
+  ],
+  "tmin": 180,
+  "tmax": 270,
+  "slope_mean_deg": 5,
+  "oxides": "mars_olivine_basalt",
+  "approx": true,
+  "src": "MEDA; Farley et al. 2022 (olivine-rich floor)"
+ },
+ {
+  "id": "mawrth",
+  "world": "mars",
+  "name": "Mawrth Vallis",
+  "ja": "マウルス谷（粘土・熱水変質）",
+  "lat": 22.43,
+  "lon": -16.97,
+  "kind": "粘土鉱物",
+  "task": [
+   "astrobio",
+   "geology"
+  ],
+  "tmin": 180,
+  "tmax": 280,
+  "slope_mean_deg": 6,
+  "oxides": "mars_clay",
+  "approx": true,
+  "src": "Loizeau et al. 2007; Bishop et al. 2008"
+ },
+ {
+  "id": "arsia",
+  "world": "mars",
+  "name": "Arsia Mons skylights",
+  "ja": "アルシア山の天窓",
+  "lat": -8.26,
+  "lon": -120.09,
+  "kind": "溶岩チューブ天窓",
+  "task": [
+   "caves"
+  ],
+  "tmin": 160,
+  "tmax": 250,
+  "slope_mean_deg": 5,
+  "oxides": "mars_basalt",
+  "approx": true,
+  "src": "Cushing et al. 2007"
+ }
+]

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>声で質問するために使います。音声はこの Mac の中で文字にし、外へは送りません。 / Used to ask questions by voice; transcribed on this Mac and never sent anywhere.</string>
+</dict>
+</plist>

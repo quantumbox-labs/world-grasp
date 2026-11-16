@@ -1,0 +1,167 @@
+diff --git a/crates/browser-sdk/src/lib.rs b/crates/browser-sdk/src/lib.rs
+index 30a1d3fa..38c73491 100644
+--- a/crates/browser-sdk/src/lib.rs
++++ b/crates/browser-sdk/src/lib.rs
+@@ -101,6 +101,81 @@ impl Tool for AddTool {
+     }
+ }
+ 
++/// A tool implemented by the host page: `call(name, argumentsJson)` returns a Promise of
++/// `{ ok: boolean, text: string }`. The browser runtime is single-threaded, so the JS function is
++/// only ever touched on this thread (inside `spawn_local`).
++#[derive(Clone)]
++struct PageFn(Function);
++unsafe impl Send for PageFn {}
++unsafe impl Sync for PageFn {}
++
++struct PageTools {
++    specs: Vec<ToolSpec>,
++    call: PageFn,
++}
++impl Extension for PageTools {
++    fn id(&self) -> &str {
++        "page-tools"
++    }
++    fn tools(&self) -> Vec<Arc<dyn Tool>> {
++        self.specs
++            .iter()
++            .map(|spec| {
++                Arc::new(PageTool {
++                    spec: spec.clone(),
++                    call: self.call.clone(),
++                }) as Arc<dyn Tool>
++            })
++            .collect()
++    }
++}
++struct PageTool {
++    spec: ToolSpec,
++    call: PageFn,
++}
++#[async_trait::async_trait]
++impl Tool for PageTool {
++    fn spec(&self) -> ToolSpec {
++        self.spec.clone()
++    }
++    fn use_default_timeout(&self) -> bool {
++        false // page tools may load data on first use
++    }
++    async fn invoke(&self, arguments: serde_json::Value, _: ToolContext) -> Outcome {
++        let (tx, mut rx) = mpsc::channel::<(bool, String)>(1);
++        let call = self.call.clone();
++        let name = self.spec.name.clone();
++        let args = arguments.to_string();
++        spawn_local(async move {
++            let reply = async {
++                let value = call
++                    .0
++                    .call2(&JsValue::UNDEFINED, &JsValue::from_str(&name), &JsValue::from_str(&args))
++                    .map_err(|_| "page tool threw".to_string())?;
++                let value = JsFuture::from(js_sys::Promise::resolve(&value))
++                    .await
++                    .map_err(|e| e.as_string().unwrap_or_else(|| "page tool failed".into()))?;
++                let ok = Reflect::get(&value, &JsValue::from_str("ok"))
++                    .ok()
++                    .and_then(|v| v.as_bool())
++                    .unwrap_or(false);
++                let text = Reflect::get(&value, &JsValue::from_str("text"))
++                    .ok()
++                    .and_then(|v| v.as_string())
++                    .unwrap_or_default();
++                Ok::<_, String>((ok, text))
++            }
++            .await;
++            let _ = tx.send(reply.unwrap_or_else(|e| (false, e))).await;
++        });
++        match rx.recv().await {
++            Some((true, text)) => Outcome::Succeeded(text),
++            Some((false, text)) => Outcome::Failed(text),
++            None => Outcome::Failed("page tool dropped".into()),
++        }
++    }
++}
++
+ struct Gateway {
+     endpoint: String,
+     bearer: String,
+@@ -221,7 +296,7 @@ impl BrowserSession {
+         bearer: String,
+         timeout_ms: u32,
+     ) -> Result<BrowserSession, JsValue> {
+-        Self::open_inner(key, endpoint, model, bearer, timeout_ms, false).await
++        Self::open_full(key, endpoint, model, bearer, timeout_ms, None).await
+     }
+     /// Opens a demonstration session with a built-in, side-effect-free addition tool.
+     pub async fn open_demo(
+@@ -233,6 +308,27 @@ impl BrowserSession {
+     ) -> Result<BrowserSession, JsValue> {
+         Self::open_inner(key, endpoint, model, bearer, timeout_ms, true).await
+     }
++    /// Opens a session whose tools are implemented by the page. `tools_json` is an array of
++    /// `{ name, description, parameters }`; `call(name, argumentsJson)` resolves to `{ ok, text }`.
++    #[allow(clippy::too_many_arguments)]
++    pub async fn open_with_tools(
++        key: String,
++        endpoint: String,
++        model: String,
++        bearer: String,
++        timeout_ms: u32,
++        system_prompt: String,
++        tools_json: String,
++        call: Function,
++    ) -> Result<BrowserSession, JsValue> {
++        let specs: Vec<ToolSpec> =
++            serde_json::from_str(&tools_json).map_err(|_| js_error("invalid tools"))?;
++        let tools = PageTools {
++            specs,
++            call: PageFn(call),
++        };
++        Self::open_full(key, endpoint, model, bearer, timeout_ms, Some((system_prompt, tools))).await
++    }
+     pub fn prompt(&self, input: String) -> js_sys::Promise {
+         self.run_input(Some(input))
+     }
+@@ -285,6 +381,30 @@ impl BrowserSession {
+         bearer: String,
+         timeout_ms: u32,
+         demo_tool: bool,
++    ) -> Result<BrowserSession, JsValue> {
++        if !demo_tool {
++            return Self::open_full(key, endpoint, model, bearer, timeout_ms, None).await;
++        }
++        Self::open_full_inner(key, endpoint, model, bearer, timeout_ms, None, true).await
++    }
++    async fn open_full(
++        key: String,
++        endpoint: String,
++        model: String,
++        bearer: String,
++        timeout_ms: u32,
++        page: Option<(String, PageTools)>,
++    ) -> Result<BrowserSession, JsValue> {
++        Self::open_full_inner(key, endpoint, model, bearer, timeout_ms, page, false).await
++    }
++    async fn open_full_inner(
++        key: String,
++        endpoint: String,
++        model: String,
++        bearer: String,
++        timeout_ms: u32,
++        page: Option<(String, PageTools)>,
++        demo_tool: bool,
+     ) -> Result<BrowserSession, JsValue> {
+         if key.is_empty() || key.len() > 256 {
+             return Err(js_error("invalid session key"));
+@@ -307,6 +427,12 @@ impl BrowserSession {
+             let mut builder =
+                 SessionBuilder::new(Arc::new(Gateway { endpoint, bearer }), model.clone())
+                     .limits(limits);
++            if let Some((system_prompt, tools)) = page {
++                builder = builder.system_prompt(&system_prompt);
++                builder = builder
++                    .extension(Arc::new(tools))
++                    .map_err(|e| js_error(&e.to_string()))?;
++            }
+             if demo_tool {
+                 builder = builder.system_prompt("You are a browser demo assistant. The only available tool adds two numbers. You cannot access files, a shell, or the network.");
+                 builder = builder

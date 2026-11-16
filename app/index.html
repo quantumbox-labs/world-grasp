@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hokkaido Analog Finder</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>HOKKAIDO ANALOG FINDER <small>prototype</small></h1>
+    <nav>
+      <a href="#analogs" data-view="analogs">#10 Earth Analogs</a>
+      <a href="#walk" data-view="walk">#11 Martian Map (WALKBACK)</a>
+    </nav>
+  </header>
+
+  <section id="view-analogs" class="view">
+    <aside class="panel">
+      <label>目的別の重み
+        <select id="profile"></select>
+      </label>
+      <ol id="site-list"></ol>
+      <div id="detail"></div>
+    </aside>
+    <div class="maps">
+      <div class="mapwrap"><div class="maplabel">地球 Hokkaido</div><div id="earth-map" class="map"></div></div>
+      <div class="mapwrap"><div class="maplabel tabs" id="body-tabs"></div><div id="body-map" class="map"></div></div>
+    </div>
+  </section>
+
+  <section id="view-walk" class="view">
+    <aside class="panel">
+      <div class="tabs" id="walk-tabs"></div>
+      <label>地点
+        <select id="walk-preset"></select>
+      </label>
+      <label>歩行速度（平地） <b id="speed-v"></b> km/h
+        <input id="speed" type="range" min="0.5" max="5" step="0.5" value="2"></label>
+      <label>O₂ 残量 <b id="o2-v"></b> h
+        <input id="o2" type="range" min="1" max="12" step="0.5" value="8"></label>
+      <label>予備 <b id="reserve-v"></b> %
+        <input id="reserve" type="range" min="0" max="50" step="5" value="20"></label>
+      <div id="route-stats"></div>
+      <p class="muted">地図左上: ✋移動 / 📍ピン / 〰ルート / ↶戻す / 🗑消す / ⤓GeoJSON保存</p>
+    </aside>
+    <div class="maps single"><div id="walk-map" class="map"></div></div>
+  </section>
+
+  <footer>Data: NASA GIBS, NASA Solar System Treks (LRO LOLA/WAC/Diviner, MGS MOLA/TES, Viking, Mars Odyssey THEMIS), JAXA SELENE (Kaguya), ESA Mars Express HRSC, MRO CTX (Caltech), ESA Sentinel-2 cloudless (EOX), 国土地理院, 産総研 地質調査総合センター</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="js/layers.js"></script>
+  <script src="js/core/mapkit.js"></script>
+  <script src="js/core/drawtools.js"></script>
+  <script src="js/earth-metrics.js"></script>
+  <script src="js/bodies.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/data/missions.js"></script>
+  <script src="js/analogs.js"></script>
+  <script src="js/walkback.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+{
+ "hours": [
+  {
+   "hour": 0,
+   "air_temp_k": 203.4,
+   "pressure_pa": 720.2,
+   "sols": 11
+  },
+  {
+   "hour": 1,
+   "air_temp_k": 201.7,
+   "pressure_pa": 718.2,
+   "sols": 11
+  },
+  {
+   "hour": 2,
+   "air_temp_k": 199.2,
+   "pressure_pa": 716.6,
+   "sols": 11
+  },
+  {
+   "hour": 3,
+   "air_temp_k": 197.9,
+   "pressure_pa": 715.4,
+   "sols": 11
+  },
+  {
+   "hour": 4,
+   "air_temp_k": 196.2,
+   "pressure_pa": 715.2,
+   "sols": 11
+  },
+  {
+   "hour": 5,
+   "air_temp_k": 195.8,
+   "pressure_pa": 716.6,
+   "sols": 11
+  },
+  {
+   "hour": 6,
+   "air_temp_k": 198.9,
+   "pressure_pa": 722.7,
+   "sols": 11
+  },
+  {
+   "hour": 7,
+   "air_temp_k": 207.4,
+   "pressure_pa": 729.8,
+   "sols": 11
+  },
+  {
+   "hour": 8,
+   "air_temp_k": 218.3,
+   "pressure_pa": 725.5,
+   "sols": 11
+  },
+  {
+   "hour": 9,
+   "air_temp_k": 226.5,
+   "pressure_pa": 718.9,
+   "sols": 11
+  },
+  {
+   "hour": 10,
+   "air_temp_k": 235.8,
+   "pressure_pa": 706.7,
+   "sols": 11
+  },
+  {
+   "hour": 11,
+   "air_temp_k": 240.7,
+   "pressure_pa": 709.9,
+   "sols": 13
+  },
+  {
+   "hour": 12,
+   "air_temp_k": 246.5,
+   "pressure_pa": 715,
+   "sols": 14
+  },
+  {
+   "hour": 13,
+   "air_temp_k": 249.3,
+   "pressure_pa": 712.9,
+   "sols": 14
+  },
+  {
+   "hour": 14,
+   "air_temp_k": 251.1,
+   "pressure_pa": 710.4,
+   "sols": 14
+  },
+  {
+   "hour": 15,
+   "air_temp_k": 249,
+   "pressure_pa": 707.9,
+   "sols": 14
+  },
+  {
+   "hour": 16,
+   "air_temp_k": 244.7,
+   "pressure_pa": 707,
+   "sols": 14
+  },
+  {
+   "hour": 17,
+   "air_temp_k": 236.8,
+   "pressure_pa": 715,
+   "sols": 13
+  },
+  {
+   "hour": 18,
+   "air_temp_k": 226.2,
+   "pressure_pa": 714.9,
+   "sols": 14
+  },
+  {
+   "hour": 19,
+   "air_temp_k": 219.4,
+   "pressure_pa": 724,
+   "sols": 14
+  },
+  {
+   "hour": 20,
+   "air_temp_k": 214.2,
+   "pressure_pa": 726.2,
+   "sols": 14
+  },
+  {
+   "hour": 21,
+   "air_temp_k": 211.4,
+   "pressure_pa": 724.2,
+   "sols": 14
+  },
+  {
+   "hour": 22,
+   "air_temp_k": 207.3,
+   "pressure_pa": 723.4,
+   "sols": 14
+  },
+  {
+   "hour": 23,
+   "air_temp_k": 205.1,
+   "pressure_pa": 725.2,
+   "sols": 12
+  }
+ ],
+ "sols": [
+  20,
+  65,
+  110,
+  155,
+  200,
+  246,
+  290,
+  335,
+  380,
+  425,
+  470,
+  515,
+  560,
+  605,
+  650
+ ],
+ "src": "Mars 2020 MEDA calibrated air temperature (ATS, median of 5 sensors) and pressure (BAROCAP3), NASA PDS Atmospheres node mars2020_meda; 15 sols over one Mars year (sols 20, 65, 110, 155, 200, 246, 290, 335, 380, 425, 470, 515, 560, 605, 650), hourly means by local true solar time"
+}

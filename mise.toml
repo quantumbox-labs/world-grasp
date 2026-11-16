@@ -1,0 +1,95 @@
+# Tasks for Hokkaido Analog Finder (Rust core → WASM, React/Vite web, Tauri v2 desktop).
+#   mise run setup        one-time: wasm target, wasm-bindgen CLI, JS deps
+#   mise run dev          web dev server (http://localhost:5173)
+#   mise run tauri-dev    desktop app
+#   mise run ci-changed   checks for what changed (see scripts/ci-changed.sh)
+#   mise run deploy-web   publish main to the deploy branch (see scripts/deploy-web.sh)
+
+[env]
+WASM_BINDGEN_VERSION = "0.2.130"
+
+[tasks.setup]
+description = "Install the wasm target, wasm-bindgen CLI and JS dependencies"
+run = [
+  "rustup target add wasm32-unknown-unknown",
+  "wasm-bindgen --version 2>/dev/null | grep -q \" $WASM_BINDGEN_VERSION\" || cargo install wasm-bindgen-cli --version $WASM_BINDGEN_VERSION --locked",
+  "pnpm install",
+  "pnpm --dir web install",
+]
+
+[tasks.sync-data]
+description = "Regenerate data/*.json from app/js (run after scripts/compute_earth_metrics.py)"
+run = "node scripts/sync-data.mjs"
+
+[tasks.walk-data]
+description = "WALKBACK: build web/public/data from data/raw (Jezero DEM, rover traverse, EVA) + Hokkaido grids from GSI"
+run = "node scripts/build-walk-data.mjs"
+
+[tasks.scan-data]
+description = "#10: build web/public/data/scan from NASA data (NASADEM terrain + NASA POWER climate), cached in data/raw"
+run = "node scripts/build-scan-data.mjs"
+
+[tasks.walk-tiles]
+description = "WALKBACK: download map tiles into web/public/tiles for offline use (skips existing)"
+run = "node scripts/fetch-walk-tiles.mjs"
+
+[tasks.wasm]
+description = "Build the Rust core to WASM for the web app"
+sources = ["crates/**/*.rs", "crates/**/Cargo.toml", "data/*.json", "Cargo.lock"]
+outputs = ["web/src/wasm/analog_wasm_bg.wasm"]
+run = [
+  "cargo build -p analog-wasm --release --target wasm32-unknown-unknown",
+  "wasm-bindgen --target web --out-dir web/src/wasm target/wasm32-unknown-unknown/release/analog_wasm.wasm",
+]
+
+[tasks.dev]
+description = "Web dev server"
+depends = ["wasm"]
+run = "pnpm --dir web dev"
+
+[tasks.tauri-dev]
+description = "Desktop app (Tauri v2) with hot reload"
+depends = ["wasm"]
+run = "pnpm tauri dev"
+
+[tasks.build]
+description = "Static web build in web/dist (GitHub Pages ready)"
+depends = ["wasm"]
+run = "pnpm --dir web build"
+
+[tasks.deploy-web]
+description = "Publish: merge origin/main into the deploy branch, rebuild the committed wasm, push (tachyon builds it)"
+run = "scripts/deploy-web.sh"
+
+[tasks.tauri-build]
+description = "Desktop bundle"
+depends = ["wasm"]
+run = "pnpm tauri build"
+
+[tasks.test]
+description = "Rust unit tests"
+run = "cargo test -p analog-core"
+
+[tasks.lint]
+description = "rustfmt + clippy (core and wasm)"
+run = [
+  "cargo fmt --all --check",
+  "cargo clippy -p analog-core -p analog-wasm --all-targets -- -D warnings",
+]
+
+[tasks.typecheck]
+depends = ["wasm"]
+run = "pnpm --dir web typecheck"
+
+[tasks.e2e]
+description = "Headless smoke test of the built web app (needs Playwright + Chromium)"
+depends = ["build"]
+run = "scripts/e2e.sh"
+
+[tasks.ci]
+description = "Everything"
+run = "scripts/ci-changed.sh --all"
+
+[tasks.ci-changed]
+description = "Only the checks affected by uncommitted / branch changes"
+run = "scripts/ci-changed.sh"

@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moon Base Rehearsal Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 上から「3行要約 → 画面の流れ → 具体例 → 仕組み → 作る順番 → 時間割 → 用語」。左に章番号の目次 */
+:root{
+  --bg:#f2f4f6; --paper:#ffffff; --fg:#141a22; --muted:#5a6573; --line:#d6dce3;
+  --moon:#3c4a63; --moon-soft:#e4e8ef;
+  --t1:#1f7a8c; --t1s:#e1f0f3; --t2:#b7791f; --t2s:#f8eedd; --t3:#7a4fb0; --t3s:#eee6f7; --t4:#8a94a3; --t4s:#eceff3;
+  --cut:#c0392b; --cuts:#f8e1de; --ok:#2e7d4f; --oks:#e0f1e7;
+  --f-head:"Space Grotesk","Zen Kaku Gothic New",system-ui,sans-serif;
+  --f-body:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragino Sans",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1319; --paper:#171d26; --fg:#e5e9ef; --muted:#9aa5b3; --line:#2b3441; --moon:#aab8d3; --moon-soft:#1f2735;
+  --t1:#5cc0d2; --t1s:#173037; --t2:#e3a84e; --t2s:#33281a; --t3:#b18be0; --t3s:#2a2138; --t4:#8f9aab; --t4s:#232a34; --cut:#ef6b5b; --cuts:#3a1f1c; --ok:#6cc893; --oks:#1b3226; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1319; --paper:#171d26; --fg:#e5e9ef; --muted:#9aa5b3; --line:#2b3441; --moon:#aab8d3; --moon-soft:#1f2735;
+  --t1:#5cc0d2; --t1s:#173037; --t2:#e3a84e; --t2s:#33281a; --t3:#b18be0; --t3s:#2a2138; --t4:#8f9aab; --t4s:#232a34; --cut:#ef6b5b; --cuts:#3a1f1c; --ok:#6cc893; --oks:#1b3226; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);line-height:1.75;font-size:15px}
+.wrap{max-width:1100px;margin:0 auto;padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:34px}
+h1,h2,h3{font-family:var(--f-head);text-wrap:balance;margin:0;line-height:1.3}
+h2{font-size:22px} h3{font-size:16px}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.muted{color:var(--muted)}
+.sec{display:grid;gap:14px}
+.sec-head{display:grid;gap:4px}
+.sec-head .no{font-family:var(--f-mono);font-size:12px;color:var(--moon)}
+.sec-head p{color:var(--muted);max-width:72ch}
+.box{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px}
+nav.toc a{font-size:12.5px;color:var(--fg);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 10px;background:var(--paper)}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--moon);outline:none}
+/* hero */
+.hero{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px;display:grid;gap:14px}
+.hero h1{font-size:clamp(24px,3.6vw,36px)}
+.hero .en{font-family:var(--f-mono);color:var(--muted);font-size:14px}
+.tldr{display:grid;gap:8px;counter-reset:t}
+.tldr div{display:grid;grid-template-columns:2em 1fr;gap:6px;font-size:15px}
+.tldr div::before{counter-increment:t;content:counter(t);font-family:var(--f-mono);width:1.6em;height:1.6em;border-radius:50%;background:var(--moon);color:var(--paper);display:grid;place-items:center;font-size:12px;margin-top:3px}
+/* flow */
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:900px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.flow{grid-template-columns:1fr}}
+.scr{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:grid;align-content:start;min-width:0}
+.scr .bar{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:10.5px;color:var(--muted);align-items:center}
+.scr .bar i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.scr .body{padding:10px;display:grid;gap:6px;font-size:12.5px;line-height:1.5;min-height:150px;align-content:start}
+.scr .cap{padding:10px;border-top:1px solid var(--line);font-size:13px}
+.scr .cap b{display:block;font-family:var(--f-head)}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:11px;border-radius:99px;padding:1px 8px;border:1px solid var(--line);background:var(--bg)}
+.pill.on{background:var(--moon);color:var(--paper);border-color:var(--moon)}
+.pill.gap{background:var(--cuts);color:var(--cut);border-color:transparent}
+.mini-row{display:flex;justify-content:space-between;gap:6px;border-bottom:1px dashed var(--line);padding-bottom:3px}
+.mini-row b{font-family:var(--f-mono);font-weight:500}
+/* walkthrough table */
+.tbl{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:900px}
+th,td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+th{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);font-weight:500;background:var(--bg);position:sticky;top:0}
+td.k{font-weight:700;white-space:nowrap}
+td .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+td.gapc{color:var(--cut)}
+tr:last-child td{border-bottom:none}
+.verdict{display:inline-block;font-family:var(--f-mono);font-size:11px;border-radius:4px;padding:0 6px;margin-top:4px}
+.v-good{background:var(--oks);color:var(--ok)} .v-mid{background:var(--t2s);color:var(--t2)} .v-bad{background:var(--cuts);color:var(--cut)}
+/* axes */
+.axes5{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.ax{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:6px;align-content:start;min-width:0}
+.ax h3{font-size:15px}
+.ax .f{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);background:var(--bg);border-radius:4px;padding:4px 6px;overflow-wrap:anywhere}
+.ax .ex{font-size:13px}
+.ax .src{font-size:11.5px;color:var(--muted)}
+/* weights chart */
+.wchart{display:grid;gap:8px}
+.wrow{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:10px;align-items:center;font-size:13px}
+.wbar{display:flex;height:22px;border-radius:4px;overflow:hidden}
+.wbar span{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:10.5px;color:var(--paper);min-width:0;overflow:hidden}
+.c-topo{background:#4f6d8f} .c-geo{background:#8a5a44} .c-temp{background:#2a8aa0} .c-light{background:#c29a2e} .c-reg{background:#6c7a3d}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;gap:5px;align-items:center}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+/* month chart */
+.mchart svg{display:block;width:100%;height:auto}
+.mchart text{fill:var(--muted);font-family:var(--f-mono);font-size:10px}
+/* tiers */
+.tiers{display:grid;gap:10px}
+.tier{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--k);border-radius:8px;padding:16px;display:grid;grid-template-columns:12em minmax(0,1fr);gap:14px}
+@media (max-width:720px){.tier{grid-template-columns:1fr}}
+.tier.t1{--k:var(--t1);--ks:var(--t1s)} .tier.t2{--k:var(--t2);--ks:var(--t2s)} .tier.t3{--k:var(--t3);--ks:var(--t3s)} .tier.t4{--k:var(--t4);--ks:var(--t4s)}
+.tier .lab b{display:block;font-family:var(--f-head);font-size:17px}
+.tier .lab span{display:inline-block;font-family:var(--f-mono);font-size:11px;background:var(--ks);color:var(--k);border-radius:99px;padding:1px 8px;margin-top:4px}
+.tier .lab p{font-size:12.5px;color:var(--muted);margin-top:6px}
+.tier ul{margin:0;padding-left:1.1em;font-size:14px}
+.tier li{margin:3px 0}
+.tier .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:10px}
+.tier .meta div{border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:12.5px;min-width:0}
+.tier .meta b{display:block;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);font-weight:500}
+.tier code{font-family:var(--f-mono);font-size:12px;background:var(--bg);padding:0 4px;border-radius:3px;overflow-wrap:anywhere}
+.cutline{display:flex;align-items:center;gap:10px;color:var(--cut);font-family:var(--f-mono);font-size:12px}
+.cutline::before,.cutline::after{content:"";flex:1;border-top:2px dashed var(--cut)}
+/* timeline */
+.tl-wrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px}
+.tl{min-width:760px;display:grid;gap:6px}
+.tl .row{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:8px;font-size:12.5px}
+.tl .track{position:relative;height:26px;background:var(--bg);border-radius:4px}
+.tl .barx{position:absolute;top:3px;bottom:3px;border-radius:4px;background:var(--k);color:var(--paper);font-size:11px;padding:0 6px;display:flex;align-items:center;white-space:nowrap;overflow:hidden}
+.tl .gate{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--cut)}
+.tl .axis{display:grid;grid-template-columns:110px 1fr;gap:8px}
+.tl .ticks{position:relative;height:18px;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.tl .ticks span{position:absolute;transform:translateX(-50%)}
+.gates{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.gates div{border:1px solid var(--line);border-top:3px solid var(--cut);border-radius:8px;padding:10px 12px;background:var(--paper);font-size:13.5px;min-width:0}
+.gates b{display:block;font-family:var(--f-mono);font-size:12px;color:var(--cut)}
+/* glossary */
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px}
+.gloss div{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;min-width:0}
+.gloss b{display:block;font-family:var(--f-mono);font-size:12.5px}
+.note{font-size:12.5px;color:var(--muted);border-left:3px solid var(--line);padding-left:10px}
+.ask{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.ask div{border:1px dashed var(--muted);border-radius:8px;padding:12px 14px;font-size:13.5px;min-width:0}
+.ask b{display:block;margin-bottom:2px}
+.callout{background:var(--cuts);border-radius:8px;padding:12px 14px;font-size:13.5px}
+.callout b{color:var(--cut)}
+</style>
+
+<div class="wrap">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="eyebrow">Dream plan · ギリ届く版 · 詳細版 · 2026-11-14 15:10</div>
+    <h1>北海道の1年で、月面基地の訓練計画を組む。</h1>
+    <div class="en">One year in Hokkaido = a full rehearsal campaign for a Moon base.</div>
+    <div class="tldr">
+      <div>月の基地候補地（NASA の Artemis III 候補など）を1つ選ぶ。</div>
+      <div>「着陸・氷の採掘・歩行・縦穴・建設」の試験ごとに、北海道のどこで、何月にやればいいかが出る。</div>
+      <div>同時に「ここでは再現できないこと」（重力1/6、真空、−200℃級の寒さ など）も必ず出る。似ている点と違う点の両方をデータで示す、という課題文の要求にそのまま答える。</div>
+    </div>
+    <nav class="toc" aria-label="目次">
+      <a href="#summary">0 結局なにを</a><a href="#flow">1 画面の流れ</a><a href="#walk">2 具体例</a><a href="#score">3 スコアの仕組み</a><a href="#season">4 季節で何が変わるか</a><a href="#data">4.5 使うNASAデータ</a><a href="#ship">4.6 配る形</a><a href="#tiers">5 作る順番</a><a href="#time">6 時間割</a><a href="#words">7 用語</a><a href="#decide">8 決めること</a>
+    </nav>
+  </section>
+
+  <!-- SUMMARY -->
+  <section class="sec" id="summary">
+    <div class="sec-head"><span class="no">0</span><h2>結局なにができればいいか</h2></div>
+    <div class="axes5" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div class="ax" style="border:2px solid var(--fg)">
+        <h3>これができれば提出できる（5つ）</h3>
+        <ol style="margin:0;padding-left:1.3em;display:grid;gap:6px;font-size:14px">
+          <li>月の基地候補（Artemis III 候補など）を地図で選べる</li>
+          <li>試験ごと（着陸・氷・歩行・縦穴・建設）に、北海道の上位地点が5軸の内訳つきで出る</li>
+          <li>試験ごとに「北海道では再現できないこと」が数字つきで出る（例：温度差 約175 K）</li>
+          <li>使った NASA データの出典が画面とフォームに書ける（LRO・MODIS・Artemis 候補地）</li>
+          <li>公開リンクで開けて、30秒動画で伝わる</li>
+        </ol>
+        <p class="note">1〜3が段1（今日19時まで、既存のコードとデータで作れる）。4・5は必ずやる。</p>
+      </div>
+      <div class="ax" style="border:2px solid var(--t2);background:var(--t2s)">
+        <h3>ここが夢（ギリ届くかどうか）</h3>
+        <ol style="margin:0;padding-left:1.3em;display:grid;gap:6px;font-size:14px">
+          <li><b>季節スライダーと1年の訓練カレンダー</b>。スライダーを動かすと北海道の地図の順位が入れ替わり、「何月にどこで何の試験」が12ヶ月の表になる（段2・夢の本体）</li>
+          <li><b>同じ坂・同じ距離の練習ルートを北海道に出す</b>。月や火星で引いた道と似た道が北海道の地図に出る。火星（#11）側でチームが選んだ夢と同じもので、2つの課題が1本につながる（今は未来像。段3と差し替え候補）</li>
+          <li><b>北海道のどこでもクリックで即スコア</b>。14地点以外でも地形の点数とできない試験が出る（段3）</li>
+        </ol>
+        <p class="note">一言「北海道の1年で、月面基地の訓練計画を組む。」は夢1が実現して初めて言い切れる。夢1が間に合わなければ、1月と8月の2時点で見せる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 FLOW -->
+  <section class="sec" id="flow">
+    <div class="sec-head"><span class="no">1</span><h2>使う人が見る画面の流れ</h2><p>4つの画面を順に進むだけ。30秒動画もこの順番でそのまま撮れます。</p></div>
+    <div class="flow">
+      <div class="scr"><div class="bar"><i></i><i></i><i></i>&nbsp;1 / 基地を選ぶ</div>
+        <div class="body">
+          <span class="pill on">月</span> <span class="pill">火星</span>
+          <div class="mini-row"><span>モンス・ムートン台地</span><b>南極</b></div>
+          <div class="mini-row"><span>マラパート山塊</span><b>南極</b></div>
+          <div class="mini-row"><span>シャクルトン（永久影）</span><b>南極</b></div>
+          <div class="mini-row"><span>マリウス丘の縦穴</span><b>赤道寄り</b></div>
+        </div>
+        <div class="cap"><b>月の地図で候補地をクリック</b>候補地は data/bodies.json に入っている実在の場所。Artemis III の候補地域や「かぐや」が見つけた縦穴。</div></div>
+      <div class="scr"><div class="bar"><i></i><i></i><i></i>&nbsp;2 / 試験を選ぶ</div>
+        <div class="body">
+          <div class="mini-row"><span>着陸・走行</span><b>地形重視</b></div>
+          <div class="mini-row"><span>氷・資源（ISRU）</span><b>温度重視</b></div>
+          <div class="mini-row"><span>歩行（EVA）</span><b>傾斜・裸地</b></div>
+          <div class="mini-row"><span>縦穴・溶岩洞</span><b>地形＋温度</b></div>
+          <div class="mini-row"><span>建設・表土</span><b>表土重視</b></div>
+        </div>
+        <div class="cap"><b>その基地で必要な試験が並ぶ</b>試験ごとに5軸の「重み」が変わる（3章）。例えば氷の試験は温度を40%で見る。</div></div>
+      <div class="scr"><div class="bar"><i></i><i></i><i></i>&nbsp;3 / 北海道マップ</div>
+        <div class="body">
+          <svg viewBox="0 0 160 90" role="img" aria-label="北海道地図と季節スライダー"><path d="M30 60 L52 28 L96 22 L124 42 L114 70 L70 78 Z" fill="var(--bg)" stroke="var(--t1)"/><circle cx="82" cy="40" r="6" fill="var(--t1)"/><circle cx="76" cy="46" r="4" fill="var(--t1)" opacity=".6"/><circle cx="58" cy="64" r="3" fill="var(--t1)" opacity=".35"/><line x1="16" y1="86" x2="144" y2="86" stroke="var(--line)" stroke-width="3"/><circle cx="24" cy="86" r="4" fill="var(--t2)"/></svg>
+          <div class="mini-row"><span>1. 大雪山 旭岳</span><b>1月</b></div>
+        </div>
+        <div class="cap"><b>季節スライダーで地図の色が変わる</b>点が大きく濃いほど似ている。スライダーを1月→8月に動かすと順位が入れ替わる。</div></div>
+      <div class="scr"><div class="bar"><i></i><i></i><i></i>&nbsp;4 / 訓練カレンダー</div>
+        <div class="body">
+          <svg viewBox="0 0 160 70" role="img" aria-label="12ヶ月の訓練カレンダー"><g font-size="7" font-family="monospace" fill="var(--muted)"><text x="40" y="8">1</text><text x="140" y="8">12</text></g><rect x="40" y="12" width="20" height="9" fill="var(--t1)"/><rect x="88" y="24" width="28" height="9" fill="var(--t2)"/><rect x="72" y="36" width="44" height="9" fill="var(--t3)" opacity=".7"/><rect x="88" y="48" width="24" height="9" fill="var(--t4)"/><g font-size="7" fill="var(--fg)"><text x="2" y="19">氷</text><text x="2" y="31">建設</text><text x="2" y="43">縦穴</text><text x="2" y="55">歩行</text></g></svg>
+          <span class="pill gap">重力 1/6 は再現不可</span> <span class="pill gap">真空は再現不可</span>
+        </div>
+        <div class="cap"><b>1年分の試験日程が自動で組まれる</b>どの月にどこで何を試すかの表と、試験ごとの「できないこと」の赤いバッジ。</div></div>
+    </div>
+  </section>
+
+  <!-- 2 WALKTHROUGH -->
+  <section class="sec" id="walk">
+    <div class="sec-head"><span class="no">2</span><h2>具体例：モンス・ムートン台地（月の南極）を選んだとき</h2><p>数字はすべて今リポジトリにある実データ（data/bodies.json と data/earth-metrics.json）。何月が良いかは段2で月別データを入れて確定させる見込み値です。</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>試験</th><th>月側の条件</th><th>北海道の候補</th><th>北海道の実データ</th><th>いつ</th><th>ここでは再現できないこと</th></tr></thead>
+      <tbody>
+        <tr><td class="k">着陸・走行</td><td>平均傾斜 <span class="num">8°</span>（Artemis の着陸上限は 8〜10°）</td><td>大雪山 小泉岳〜白雲岳の高山荒原</td><td>平均傾斜 <span class="num">16.1°</span>、標高 <span class="num">1,856 m</span><br><span class="verdict v-mid">傾斜は月の約2倍</span></td><td>7〜9月（雪がない）</td><td class="gapc">重力 1/6 での機体の挙動、真空中の砂ぼこりの舞い方</td></tr>
+        <tr><td class="k">氷・資源（ISRU）</td><td>夜の地表 <span class="num">76 K（−197℃）</span>、永久影の底は <span class="num">42 K</span></td><td>大雪山 旭岳</td><td>1月夜の地表 <span class="num">251.9 K（−21℃）</span>、気温の最低 <span class="num">−26℃</span><br><span class="verdict v-bad">温度差は約 175 K</span></td><td>1〜2月</td><td class="gapc">−200℃級の寒さ、真空で氷が直接気化すること</td></tr>
+        <tr><td class="k">歩行（EVA）</td><td>月南極は局所傾斜 <span class="num">15°</span> 超が多く歩行を制約</td><td>十勝岳 62-2火口周辺</td><td>平均傾斜 <span class="num">22°</span>、裸地率 <span class="num">40.5%</span>（14地点で最大）<br><span class="verdict v-good">岩と砂礫の歩きにくさは近い</span></td><td>8〜9月</td><td class="gapc">宇宙服の重さと 1/6 G の歩き方、放射線</td></tr>
+        <tr><td class="k">縦穴・溶岩洞</td><td>マリウス丘の縦穴：直径 <span class="num">65 m</span>、深さ <span class="num">80〜88 m</span></td><td>然別 風穴地帯</td><td>夏でも地下に氷が残る風穴（Drive の4ペアの1つ）<br><span class="verdict v-mid">規模は小さい</span></td><td>通年（夏が見せ場）</td><td class="gapc">溶岩洞の大きさ（月は地球の 100〜1000倍）</td></tr>
+        <tr><td class="k">建設・表土</td><td>未固結の細かい表土（レゴリス）</td><td>十勝岳 / 昭和新山</td><td>火山砂礫・火砕岩。十勝岳は植生が少なく NDVI 最小 <span class="num">0.003</span><br><span class="verdict v-good">火山の砂礫で施工試験ができる</span></td><td>7〜9月</td><td class="gapc">月の砂の鋭さ（風化していない）、静電気で付着する性質</td></tr>
+        <tr><td class="k">日照（電力）</td><td>正午の太陽の高さ <span class="num">3〜6°</span>（ほぼ地平線）</td><td>どこも近くない</td><td>旭岳の正午の太陽は <span class="num">23°（12月）〜69°（6月）</span><br><span class="verdict v-bad">いちばん近い冬至でも 4倍以上高い</span></td><td>12月が最も近い</td><td class="gapc">ほぼ水平から差す光と長い影、数日続く暗闇</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b>ここが審査で効くところ。</b>「似ている」だけでなく「温度と日照は北海道では届かない」と数字で正直に出すことで、課題文の Remember Earth's limits に答えられます。違いが出る試験は「北海道では装備の操作手順まで、本番条件は真空チャンバーで」のように使い分けを示せます。</div>
+  </section>
+
+  <!-- 3 SCORE -->
+  <section class="sec" id="score">
+    <div class="sec-head"><span class="no">3</span><h2>スコアの仕組み：5つの軸を足し合わせる</h2><p>各軸を 0〜1 で出し、試験ごとの重みで足して 0〜100 点にします。計算は crates/analog-core/src/scoring.rs に実装済み。5軸の採用は Drive の調査（ShadowAstra Atlas）に従っています。</p></div>
+    <div class="axes5">
+      <div class="ax"><h3>地形</h3><p class="ex">傾斜の分布がどれだけ近いか。</p><div class="f">傾斜ヒストグラムの距離</div><p class="src">例：十勝岳 22° vs 月 8°</p></div>
+      <div class="ax"><h3>地質</h3><p class="ex">岩の化学組成（SiO₂, FeO など6成分）の近さ。</p><div class="f">成分ベクトルのコサイン類似度</div><p class="src">例：安山岩 vs 月の高地</p></div>
+      <div class="ax"><h3>温度</h3><p class="ex">最低温度と最高温度の差。</p><div class="f">exp(−温度差の距離 / 150 K)</div><p class="src">例：252–291 K vs 76–252 K</p></div>
+      <div class="ax"><h3>日照</h3><p class="ex">1年の正午の太陽の高さ（最小と最大）の差。</p><div class="f">exp(−高さの差 / 40°)</div><p class="src">例：23–69° vs 3–6°</p></div>
+      <div class="ax"><h3>表土</h3><p class="ex">植物が無く乾いているか。</p><div class="f">0.6×裸地 ＋ 0.4×乾燥</div><p class="src">例：十勝岳 裸地 40.5%</p></div>
+    </div>
+    <div class="box wchart">
+      <h3>試験ごとの重み（今のコードの値）</h3>
+      <div class="legend"><span><i class="c-topo"></i>地形</span><span><i class="c-geo"></i>地質</span><span><i class="c-temp"></i>温度</span><span><i class="c-light"></i>日照</span><span><i class="c-reg"></i>表土</span></div>
+      <div class="wrow"><span>バランス</span><div class="wbar"><span class="c-topo" style="width:20%">20</span><span class="c-geo" style="width:20%">20</span><span class="c-temp" style="width:20%">20</span><span class="c-light" style="width:20%">20</span><span class="c-reg" style="width:20%">20</span></div></div>
+      <div class="wrow"><span>氷・ISRU</span><div class="wbar"><span class="c-topo" style="width:15%">15</span><span class="c-geo" style="width:15%">15</span><span class="c-temp" style="width:40%">40</span><span class="c-light" style="width:15%">15</span><span class="c-reg" style="width:15%">15</span></div></div>
+      <div class="wrow"><span>着陸・走行</span><div class="wbar"><span class="c-topo" style="width:50%">50</span><span class="c-geo" style="width:12.5%">12.5</span><span class="c-temp" style="width:12.5%">12.5</span><span class="c-light" style="width:12.5%">12.5</span><span class="c-reg" style="width:12.5%">12.5</span></div></div>
+      <div class="wrow"><span>地質（仮）</span><div class="wbar"><span class="c-topo" style="width:15%">15</span><span class="c-geo" style="width:50%">50</span><span class="c-temp" style="width:10%">10</span><span class="c-light" style="width:5%"></span><span class="c-reg" style="width:20%">20</span></div></div>
+      <div class="wrow"><span>洞窟（仮）</span><div class="wbar"><span class="c-topo" style="width:35%">35</span><span class="c-geo" style="width:15%">15</span><span class="c-temp" style="width:35%">35</span><span class="c-light" style="width:5%"></span><span class="c-reg" style="width:10%">10</span></div></div>
+      <p class="note">論文で裏付けがあるのは「氷」と「着陸」の重みだけ。残りはチームの仮置きなので、画面でスライダーで動かせるようにして「主観では？」への答えにします（Drive の対策案どおり）。歩行・建設の重みは段1で決めて追加。</p>
+    </div>
+  </section>
+
+  <!-- 4 SEASON -->
+  <section class="sec" id="season">
+    <div class="sec-head"><span class="no">4</span><h2>季節で何が変わるか（夢の本体）</h2><p>今のスコアは「1年の最小と最大」を1つの値にまとめています。これを月ごとに分けると、季節スライダーと訓練カレンダーが作れます。</p></div>
+    <div class="box mchart">
+      <h3>旭岳の正午の太陽の高さ（月別）と、月の南極の比較</h3>
+      <svg viewBox="0 0 640 230" role="img" aria-label="旭岳の正午の太陽高度は12月23度から6月69度。月の南極は3から6度。" id="sunchart"></svg>
+      <p class="note">緯度と日付だけで計算できるのでデータ取得は不要（今のコードに南中高度の計算が既にある）。月の南極はどの月も 3〜6° なので、北海道で一番近いのは冬至前後。これ自体が「再現できない差」の見せ方になります。</p>
+    </div>
+    <div class="box" style="display:grid;gap:10px">
+      <h3>軸ごとの「今」と「段2のあと」</h3>
+      <div class="tbl" style="border:none"><table style="min-width:640px">
+        <thead><tr><th>軸</th><th>今あるデータ</th><th>段2で足すもの</th><th>季節で変わる？</th></tr></thead>
+        <tbody>
+          <tr><td class="k">日照</td><td>1年の南中高度の最小・最大（計算）</td><td>月ごとの南中高度と日の長さ（計算のみ）</td><td>変わる</td></tr>
+          <tr><td class="k">温度</td><td>1月の夜と8月の昼の地表温度（MODIS）の2時点</td><td>NASA POWER 月別気温（＋できれば MODIS 月平均地表温度）14地点×12ヶ月</td><td>変わる</td></tr>
+          <tr><td class="k">表土</td><td>植生 NDVI（7月）、年降水量</td><td>MODIS 積雪の月別（雪の月は表土試験できない）</td><td>変わる</td></tr>
+          <tr><td class="k">地形</td><td>国土地理院 DEM の傾斜分布</td><td>なし</td><td>変わらない</td></tr>
+          <tr><td class="k">地質</td><td>産総研 地質図の岩石</td><td>なし</td><td>変わらない</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">「変わらない軸もある」と明記するのが妥当性の加点ポイント。温度・積雪の月別データは NASA の GIBS / Earthdata から取る想定で、取り出し口は未検証（クラウドからは届かないので Mac 側で実行）。</p>
+    </div>
+  </section>
+
+  <!-- DATA -->
+  <section class="sec" id="data">
+    <div class="sec-head"><span class="no">4.5</span><h2>使う NASA データ</h2><p>提出フォームの「NASA データ」欄にそのまま書ける一覧。状態は「実測」＝ブラウザから取得できることを確認済み、「値を収録」＝数値を data/*.json に入れ済み、「未検証」＝これからつなぐもの。</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>データ</th><th>ミッション / 提供</th><th>このアプリでの使い道</th><th>段</th><th>取り方</th><th>状態</th></tr></thead>
+      <tbody>
+        <tr><td colspan="6" class="eyebrow" style="background:var(--bg)">月（基地候補側）</td></tr>
+        <tr><td class="k">LOLA 標高・傾斜</td><td>LRO（NASA）</td><td>月の地図の陰影、候補地の傾斜（着陸・歩行の比較）</td><td>1</td><td>Solar System Treks タイル / ImageServer</td><td><span class="verdict v-good">実測</span></td></tr>
+        <tr><td class="k">WAC 画像モザイク</td><td>LRO LROC（NASA）</td><td>月のベース地図</td><td>1</td><td>Solar System Treks タイル</td><td><span class="verdict v-good">実測</span></td></tr>
+        <tr><td class="k">Diviner 地表温度</td><td>LRO（NASA / PDS）</td><td>候補地の最低・最高温度（76 K など）＝温度軸の比較相手</td><td>1</td><td>PDS Geosciences の文献値</td><td><span class="verdict v-good">値を収録</span></td></tr>
+        <tr><td class="k">永久影（PSR）マップ</td><td>LRO（NASA）</td><td>氷の試験の対象地点、地図レイヤー</td><td>1</td><td>Solar System Treks タイル</td><td><span class="verdict v-good">実測</span></td></tr>
+        <tr><td class="k">Artemis III 着陸候補地域</td><td>NASA（2024 発表）</td><td>選べる基地候補（モンス・ムートン、マラパート等）</td><td>1</td><td>公表地域の中心座標</td><td><span class="verdict v-good">値を収録</span></td></tr>
+        <tr><td colspan="6" class="eyebrow" style="background:var(--bg)">地球（北海道側）</td></tr>
+        <tr><td class="k">MODIS 地表温度（LST）</td><td>Terra / Aqua（NASA）</td><td>1月夜・8月昼の地表温度＝温度軸</td><td>1</td><td>GIBS タイル / Earthdata</td><td><span class="verdict v-good">値を収録</span></td></tr>
+        <tr><td class="k">MODIS 植生（NDVI）</td><td>Terra / Aqua（NASA）</td><td>裸地かどうか＝表土軸</td><td>1</td><td>GIBS</td><td><span class="verdict v-good">値を収録</span></td></tr>
+        <tr><td class="k">MODIS 土地被覆</td><td>Terra / Aqua（NASA）</td><td>市街地・農地・水面を候補から外す</td><td>1</td><td>GIBS / Earthdata</td><td><span class="verdict v-good">値を収録</span></td></tr>
+        <tr><td class="k">Blue Marble / ASTER GDEM 陰影</td><td>NASA / NASA・METI</td><td>北海道のベース地図と陰影</td><td>1</td><td>GIBS タイル</td><td><span class="verdict v-good">実測</span></td></tr>
+        <tr><td class="k">NASA POWER 月別気温・降水</td><td>NASA（MERRA-2 再解析）</td><td>月ごとの最低気温・乾燥度＝季節スライダーの温度</td><td>2</td><td>POWER API（キー不要の JSON）</td><td><span class="verdict v-mid">未検証</span></td></tr>
+        <tr><td class="k">MODIS 積雪</td><td>Terra / Aqua（NASA）</td><td>雪の月は表土・建設の試験をしない判定</td><td>2</td><td>GIBS タイル / Earthdata</td><td><span class="verdict v-mid">未検証</span></td></tr>
+        <tr><td class="k">MODIS 地表温度 月平均</td><td>Terra / Aqua（NASA）</td><td>地表温度の月別（POWER の補強）</td><td>2</td><td>Earthdata（ログイン要）</td><td><span class="verdict v-mid">未検証</span></td></tr>
+        <tr><td colspan="6" class="eyebrow" style="background:var(--bg)">火星（候補として残す場合）</td></tr>
+        <tr><td class="k">MOLA 標高 / THEMIS / Viking</td><td>MGS・Mars Odyssey・Viking（NASA）</td><td>火星の候補地（アルカディア平原など）の地図と傾斜</td><td>1</td><td>Mars Trek タイル</td><td><span class="verdict v-good">実測</span></td></tr>
+      </tbody>
+    </table></div>
+    <div class="box" style="display:grid;gap:8px">
+      <h3>NASA 以外（参照欄に書く）</h3>
+      <p style="font-size:13.5px">JAXA SELENE「かぐや」（マリウス丘の縦穴の発見・寸法）／国土地理院 DEM（北海道の傾斜計算）／産総研 シームレス地質図（岩石）／ESA Sentinel-2 雲なしモザイク（EOX、表示用）。宇宙機関パートナーの JAXA が入るのは加点要素。</p>
+      <p class="note">段2の月別温度は、Drive のメモ（scoring-model §2.1）どおり NASA POWER を第一候補にするのが楽です。地点を指定すると月別の気温が JSON で返るので、MODIS 月平均よりずっと早く 14地点×12ヶ月が揃います。</p>
+    </div>
+  </section>
+
+  <!-- DELIVERY -->
+  <section class="sec" id="ship">
+    <div class="sec-head"><span class="no">4.6</span><h2>配る形：本命は Web、Tauri はおまけ</h2><p>提出ルールは「ログイン不要の公開リンク」。審査員はダウンロードやインストールをしない前提で考えるのが安全です。</p></div>
+    <div class="axes5" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div class="ax"><h3>Web（静的サイト）<span class="verdict v-good" style="margin-left:6px">本命</span></h3><p class="ex">React ＋ WASM をそのまま GitHub Pages 等に置く。リンクを踏めばすぐ動く。<code style="font-family:var(--f-mono);font-size:12px">mise run build</code> の web/dist がそのまま使える。</p><p class="src">必要なこと：git remote を作って公開設定。シークレットウィンドウで確認。</p></div>
+      <div class="ax"><h3>Tauri デスクトップ<span class="verdict v-mid" style="margin-left:6px">おまけ</span></h3><p class="ex">同じ画面と同じ Rust の計算がネイティブで動く。「現場（野外試験地）にも持ち出せる」という説明に使える。</p><p class="src">注意：地図タイルはネット経由なので完全オフラインではない。配布は GitHub Releases にビルドを置く形。</p></div>
+      <div class="ax"><h3>どちらも同じコード</h3><p class="ex">計算は Rust コア1つ（crates/analog-core）。Web は WASM で、Tauri はネイティブで呼ぶだけなので、作業が二重にはならない。</p><p class="src">スライドでは「Web で今すぐ試せる／デスクトップ版もある」と一言添える程度で十分。</p></div>
+    </div>
+  </section>
+
+  <!-- 5 TIERS -->
+  <section class="sec" id="tiers">
+    <div class="sec-head"><span class="no">5</span><h2>作る順番：段ごとに「完成の条件」を決める</h2><p>上の段から作り、どこで止めても提出できる形を保ちます。赤い点線より上が本命。</p></div>
+    <div class="tiers">
+      <div class="tier t1"><div class="lab"><b>段1 確実</b><span>〜今日 19:00</span><p>既存のコードとデータだけで作れる</p></div><div>
+        <ul><li>月の基地候補を選ぶ画面（既存の地図に bodies.json の月の候補を並べる）</li><li>試験5種のボタン。歩行・建設の重みを新しく決めて追加</li><li>試験ごとに北海道の上位3地点と、5軸の内訳</li><li>試験ごとの「再現できない」赤バッジ（固定の文言で可）</li></ul>
+        <div class="meta"><div><b>触るところ</b><code>analog-core/src/scoring.rs</code>（重み追加）、<code>web/src/views/AnalogsView.tsx</code></div><div><b>完成の条件</b>モンス・ムートンを選ぶと2章の表の「候補」と「できないこと」が画面に出る</div><div><b>NASAデータ</b>Trek LOLA / Diviner（月）、GIBS MODIS（地球）</div></div></div></div>
+      <div class="tier t2"><div class="lab"><b>段2 夢の本体</b><span>〜翌 02:00</span><p>季節スライダーと訓練カレンダー</p></div><div>
+        <ul><li>日照：月ごとの南中高度・日の長さを Rust で計算（数十行）</li><li>温度：NASA POWER の月別気温を14地点×12ヶ月ぶん取って JSON に。積雪は MODIS（Mac で取得 → <code>mise run sync-data</code>）</li><li>スコア関数に「月」を引数で渡せるようにする</li><li>季節スライダー（地図の点の色と大きさが変わる）</li><li>訓練カレンダー：試験ごとに「点数が一番高い月×地点」を選んで12ヶ月の表にする</li></ul>
+        <div class="meta"><div><b>触るところ</b><code>scoring.rs</code>（月引数）、<code>data/earth-metrics.json</code>（月別列）、新しい <code>CalendarView.tsx</code></div><div><b>完成の条件</b>スライダーを1月→8月に動かすと、氷の試験の1位と建設の試験の1位が入れ替わる</div><div><b>21時の判定</b>月別データが揃わなければ 1月/8月の2時点＋日照の月別計算だけで作る</div></div></div></div>
+      <div class="cutline">ここで止めても作品として成立する</div>
+      <div class="tier t3"><div class="lab"><b>段3 ギリ</b><span>〜翌 06:00</span><p>「どの地域でも使える道具」の片鱗</p></div><div>
+        <ul><li>北海道の地図のどこでもクリック → 周囲の標高を取って傾斜を計算し、地形スコアをその場で表示</li><li>その場所で「できない試験」を出す</li></ul>
+        <div class="meta"><div><b>触るところ</b><code>web/src/elevation.ts</code>（周囲の点を取る）、<code>scoring.rs</code>（地形だけで点数）</div><div><b>完成の条件</b>14地点以外をクリックしても地形の点数が出る。地形以外は「最寄り地点の値」と表示</div></div></div></div>
+      <div class="tier t4"><div class="lab"><b>未来像（作らない）</b><span>スライド最後の1枚</span></div><div>
+        <ul><li>EVA ルート照合：月で引いた歩行ルートと同じ勾配の練習ルートを北海道に重ねる（WALKBACK と合体）</li><li>世界中どこでも：JAXA G-Portal・Sentinel で全軸を自動計算</li></ul></div></div>
+    </div>
+  </section>
+
+  <!-- 6 TIME -->
+  <section class="sec" id="time">
+    <div class="sec-head"><span class="no">6</span><h2>提出までの時間割（JST）</h2><p>赤い縦線が判断のタイミング。そこで遅れていたら一段下げます。</p></div>
+    <div class="tl-wrap"><div class="tl" id="tl"></div></div>
+    <div class="gates">
+      <div><b>21:00 データ判定</b>月別 MODIS が14地点そろっていなければ、温度は 1月/8月の2時点＋日照の月別計算だけで段2を作る。</div>
+      <div><b>02:00 機能凍結</b>段3に入るか寝るかを決める。段2が未完ならここで段1＋季節2時点に戻す。</div>
+      <div><b>09:00 コード凍結</b>以降は英語UI・公開リンク・動画のみ。新機能は入れない。</div>
+      <div><b>13:00 提出</b>シークレットウィンドウでリンク確認。札幌の締切 14:00 までは再提出できる。</div>
+    </div>
+  </section>
+
+  <!-- 7 GLOSSARY -->
+  <section class="sec" id="words">
+    <div class="sec-head"><span class="no">7</span><h2>用語</h2></div>
+    <div class="gloss">
+      <div><b>アナログ（Earth analog）</b>月や火星の環境に似ていて、装備や手順の練習ができる地球上の場所。</div>
+      <div><b>Artemis III</b>NASA の有人月着陸計画。月の南極付近に着陸候補地域が選ばれている。</div>
+      <div><b>EVA</b>船外活動。宇宙服を着て外を歩く作業。</div>
+      <div><b>ISRU</b>現地資源利用。月の氷から水や酸素を作るなど。</div>
+      <div><b>永久影（PSR）</b>太陽の光が一度も当たらないクレーターの底。氷が残っていると考えられている。</div>
+      <div><b>レゴリス</b>月や火星の表面を覆う細かい砂や岩くず。</div>
+      <div><b>南中高度</b>正午の太陽の高さ（地平線から何度か）。</div>
+      <div><b>K（ケルビン）</b>温度の単位。0℃ ≒ 273 K。76 K は約 −197℃。</div>
+      <div><b>MODIS</b>NASA の地球観測衛星 Terra / Aqua のセンサー。地表温度・積雪・植生を毎日観測。</div>
+      <div><b>GIBS / Trek</b>NASA の地図タイル配信。GIBS は地球、Solar System Treks は月・火星。キー不要。</div>
+      <div><b>NDVI</b>植生の濃さの指数。0 に近いほど植物が無い。</div>
+      <div><b>LOLA / Diviner</b>月探査機 LRO の観測装置。LOLA は標高、Diviner は地表温度。</div>
+    </div>
+  </section>
+
+  <p class="note">提出ルールで「アイデア自体をAIに考えさせる」のは禁止です。このページはチームの資料と課題文の要素を組み合わせたたたき台なので、採るか・どこを変えるか・一言の言葉はチームで決めてください。公開リンク用の git remote もまだ無いので、置き場所（GitHub Pages 等）も早めに決める必要があります。</p>
+
+  <section class="sec" id="decide">
+    <div class="sec-head"><span class="no">8</span><h2>チームで決めること</h2></div>
+    <div class="ask">
+      <div><b>この方向で行くか</b>行くなら段1の実装と月別データ取得を並行で始めます。</div>
+      <div><b>一言</b>「北海道の1年で、月面基地の訓練計画を組む。」はたたき台。チームの言葉に。</div>
+      <div><b>火星を残すか</b>課題名は Moon base and Mars。火星は候補として残し、デモは月に集中する想定です。</div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  // ---- timeline: 14:00 Sat = start, +24h
+  var start=14, span=24;
+  var x=function(h){return ((h-start)/span*100).toFixed(2)+'%'};
+  var w=function(a,b){return ((b-a)/span*100).toFixed(2)+'%'};
+  var rows=[
+    ['コンセプト',[[14.5,15.5,'一言と方向を決める','--moon']]],
+    ['段1 確実',[[15.5,19,'基地候補→試験別ベスト地点','--t1']]],
+    ['データ',[[15.5,21,'MODIS 月別を取得（Mac）','--t2']]],
+    ['段2 夢',[[19,26,'日照計算・月別化・スライダー・カレンダー','--t2']]],
+    ['段3 ギリ',[[26,30,'どこでもクリック','--t3']]],
+    ['仕上げ',[[30,33,'英語UI・公開リンク','--t4']]],
+    ['動画/スライド',[[33,35.5,'30秒・英語字幕','--t4']]],
+    ['提出',[[35.5,37,'フォーム・確認','--moon']]]
+  ];
+  var gates=[21,26,33,37];
+  var tl=document.getElementById('tl');
+  rows.forEach(function(r){
+    var row=document.createElement('div');row.className='row';
+    var l=document.createElement('div');l.textContent=r[0];row.appendChild(l);
+    var t=document.createElement('div');t.className='track';
+    gates.forEach(function(g){var e=document.createElement('div');e.className='gate';e.style.left=x(g);t.appendChild(e);});
+    r[1].forEach(function(b){var e=document.createElement('div');e.className='barx';e.style.left=x(b[0]);e.style.width=w(b[0],b[1]);e.style.setProperty('--k','var('+b[3]+')');e.textContent=b[2];t.appendChild(e);});
+    row.appendChild(t);tl.appendChild(row);
+  });
+  var ax=document.createElement('div');ax.className='axis';ax.appendChild(document.createElement('div'));
+  var tk=document.createElement('div');tk.className='ticks';
+  [14,16,18,20,22,24,26,28,30,32,34,36,38].forEach(function(h){var s=document.createElement('span');s.style.left=x(h);s.textContent=(h%24)+':00';tk.appendChild(s);});
+  ax.appendChild(tk);tl.appendChild(ax);
+
+  // ---- sun chart: noon elevation = 90 - lat + declination (mid-month)
+  var decl=[-21,-13,-2,10,19,23,21,14,3,-8,-18,-23];
+  var lat=43.66, el=decl.map(function(d){return 90-lat+d});
+  var svg=document.getElementById('sunchart'), NS='http://www.w3.org/2000/svg';
+  var L=44,R=624,T=14,B=196, ymax=90;
+  var y=function(v){return B-(v/ymax)*(B-T)};
+  var bw=(R-L)/12;
+  function mk(tag,attrs,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e;}
+  [0,30,60,90].forEach(function(v){mk('line',{x1:L,x2:R,y1:y(v),y2:y(v),stroke:'var(--line)','stroke-width':1});mk('text',{x:L-6,y:y(v)+3,'text-anchor':'end'},v+'°');});
+  // moon band 3–6°
+  mk('rect',{x:L,y:y(6),width:R-L,height:y(3)-y(6),fill:'var(--cut)',opacity:.55});
+  mk('text',{x:R-4,y:y(6)-4,'text-anchor':'end',style:'fill:var(--cut)'},'月の南極 3–6°');
+  el.forEach(function(v,i){
+    var cx=L+bw*i+bw*0.18, wdt=bw*0.64;
+    var winter=(i===11||i===0);
+    mk('rect',{x:cx,y:y(v),width:wdt,height:B-y(v),rx:3,fill:winter?'var(--moon)':'var(--t2)',opacity:winter?1:.75});
+    mk('text',{x:cx+wdt/2,y:y(v)-4,'text-anchor':'middle',style:'fill:var(--fg)'},Math.round(v)+'°');
+    mk('text',{x:cx+wdt/2,y:B+14,'text-anchor':'middle'},(i+1)+'月');
+  });
+})();
+</script>
+
+</html>

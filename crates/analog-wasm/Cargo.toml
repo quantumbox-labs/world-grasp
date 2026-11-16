@@ -1,0 +1,15 @@
+[package]
+name = "analog-wasm"
+description = "wasm-bindgen bindings for analog-core (JSON in, JSON out)"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+analog-core = { path = "../analog-core" }
+serde.workspace = true
+serde_json.workspace = true
+wasm-bindgen = "=0.2.130"

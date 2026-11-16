@@ -1,0 +1,146 @@
+{
+ "lunar_highland": {
+  "label": "月 高地斜長岩質",
+  "v": [
+   45,
+   5,
+   0.4,
+   27,
+   6,
+   16
+  ],
+  "src": "Lunar Sourcebook (feldspathic highlands)"
+ },
+ "lunar_mare_basalt": {
+  "label": "月 海の玄武岩",
+  "v": [
+   45,
+   20,
+   2.5,
+   9,
+   10,
+   10
+  ],
+  "src": "Lunar Sourcebook (low-Ti mare basalt)"
+ },
+ "lunar_silicic": {
+  "label": "月 珪長質",
+  "v": [
+   70,
+   3,
+   0.5,
+   13,
+   1,
+   2
+  ],
+  "src": "Jolliff et al. 2011 (approx.)"
+ },
+ "mars_basalt": {
+  "label": "火星 玄武岩質地殻",
+  "v": [
+   46,
+   18,
+   0.9,
+   10,
+   9,
+   7
+  ],
+  "src": "Taylor & McLennan 2009 (avg. crust)"
+ },
+ "mars_olivine_basalt": {
+  "label": "火星 カンラン石玄武岩",
+  "v": [
+   42,
+   20,
+   0.6,
+   6,
+   18,
+   6
+  ],
+  "src": "Jezero floor (approx.)"
+ },
+ "mars_clay": {
+  "label": "火星 Fe/Mg 粘土",
+  "v": [
+   45,
+   20,
+   1,
+   8,
+   12,
+   3
+  ],
+  "src": "Mawrth smectite (approx.)"
+ },
+ "basalt": {
+  "label": "玄武岩",
+  "v": [
+   49.2,
+   11,
+   1.8,
+   15.7,
+   6.7,
+   9.5
+  ],
+  "src": "Le Maitre 1976"
+ },
+ "basaltic_andesite": {
+  "label": "玄武岩質安山岩",
+  "v": [
+   54,
+   9,
+   1.1,
+   16.5,
+   5,
+   8.5
+  ],
+  "src": "Le Maitre 1976 (interp.)"
+ },
+ "andesite": {
+  "label": "安山岩",
+  "v": [
+   57.9,
+   7,
+   0.9,
+   17,
+   3.3,
+   6.8
+  ],
+  "src": "Le Maitre 1976"
+ },
+ "dacite": {
+  "label": "デイサイト",
+  "v": [
+   65,
+   4.5,
+   0.6,
+   15.9,
+   1.8,
+   4.3
+  ],
+  "src": "Le Maitre 1976"
+ },
+ "rhyolite": {
+  "label": "流紋岩",
+  "v": [
+   72.8,
+   2,
+   0.3,
+   13.3,
+   0.4,
+   1.2
+  ],
+  "src": "Le Maitre 1976"
+ },
+ "sediment": {
+  "label": "堆積物（組成のばらつき大）",
+  "v": [
+   65,
+   5,
+   0.7,
+   14,
+   2,
+   3
+  ],
+  "src": "generic (low confidence)"
+ }
+}

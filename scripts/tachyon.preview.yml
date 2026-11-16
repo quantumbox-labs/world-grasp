@@ -1,0 +1,26 @@
+# Preview app for checking the merged #10 + #11 build before it goes public. scripts/deploy-web.sh
+# --target preview copies this to tachyon.yml on the `preview` branch; the public app
+# (hokkaido-analog-finder, `deploy` branch) is not touched.
+#   tachyon compute apps apply -f scripts/tachyon.preview.yml --app walkback-preview   (once)
+apiVersion: apps.tachy.one/v1alpha
+kind: CloudApps
+metadata:
+  name: nasa-hackason-preview
+  tenantId: tn_01m71hyn06c1mpz8y22ywn8qq3
+spec:
+  apps:
+    - name: walkback-preview
+      repository:
+        url: https://github.com/course-inc/nasa-hackason
+        owner: course-inc
+        name: nasa-hackason
+        defaultBranch: preview
+      rootDirectory: .
+      framework: vite
+      deploymentTarget: cloudflare_pages
+      build:
+        # web/src/wasm is committed on this branch (built by deploy-web.sh), so no Rust toolchain.
+        installCommand: npm install -g pnpm@12.16.1 && pnpm --dir web install --frozen-lockfile
+        command: node scripts/fetch-walk-tiles.mjs && pnpm --dir web build
+        outputDirectory: web/dist
+        nodeVersion: "22"

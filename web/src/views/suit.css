@@ -1,0 +1,113 @@
+/* Astronaut view (#suit): 3D terrain as the stage, helmet numbers as a HUD, 2D map in the corner. */
+.suit { --ok: #52c41a; --soon: #fadb14; --now: #ff4d4f; --st: var(--ok);
+  flex: 1; min-width: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 10px;
+  font-variant-numeric: tabular-nums; }
+.suit-soon { --st: var(--soon); }
+.suit-now { --st: var(--now); }
+
+.suit-stage { position: relative; height: calc(100vh - 170px); min-height: 420px; border: 2px solid var(--st); border-radius: 18px; overflow: hidden;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--st) 30%, transparent); }
+.suit-stage .terrain3d-help { display: none; }
+.suit-stage .terrain3d .maplabel { left: auto; right: 12px; top: 10px; }
+.suit-stage .terrain3d-ctl { left: auto; right: 12px; bottom: auto; top: 44px; }
+
+/* HUD over the 3D view: compact, translucent, top-left. */
+.suit-hud { position: absolute; left: 12px; top: 12px; z-index: 5; width: 300px; max-width: calc(100% - 24px);
+  background: rgba(5, 10, 20, .72); backdrop-filter: blur(4px); border: 1px solid color-mix(in srgb, var(--st) 60%, transparent);
+  border-radius: 16px; padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; color: #fff; }
+.suit-msg { font-size: 22px; font-weight: 700; color: var(--st); letter-spacing: .04em; }
+.suit-now .suit-msg { animation: suit-blink 1s steps(2) infinite; }
+@keyframes suit-blink { 50% { opacity: .35; } }
+.suit-hud-row { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; }
+.suit-compass { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.suit-compass .ring { fill: rgba(0, 0, 0, .25); stroke: #2b3a55; stroke-width: 3; }
+.suit-compass .arrow { fill: var(--st); }
+.suit-big { font-size: 22px; font-weight: 700; color: #fff; }
+.suit-sub, .suit-figs span, .suit-foot { color: #9aa6bd; font-size: 11px; }
+.suit-figs { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.suit-figs > div { display: flex; flex-direction: column; }
+.suit-figs b { font-size: 19px; color: #fff; line-height: 1.15; }
+.suit-figs b.small { font-size: 14px; }
+.suit-figs .warn b { color: var(--st); }
+.suit-bars { display: flex; flex-direction: column; gap: 4px; }
+.suit-bar { display: grid; grid-template-columns: 48px 1fr 40px; gap: 8px; align-items: center; font-size: 12px; }
+.suit-bar b { font-size: 13px; text-align: right; }
+.suit-track { height: 8px; background: #1b2438; border-radius: 4px; overflow: hidden; }
+.suit-track > div { height: 100%; background: #7cb8d6; }
+.suit-bar.warn .suit-track > div { background: var(--now); }
+
+/* 2D map in the bottom-right corner. */
+.suit-map2d { position: absolute; right: 12px; bottom: 12px; z-index: 5; width: 300px; height: 230px; border-radius: 12px; overflow: hidden;
+  border: 1px solid #22304a; box-shadow: 0 4px 16px rgba(0, 0, 0, .5); background: #111; }
+.suit-map2d > div:first-child { position: absolute; inset: 0; }
+.suit-map2d .leaflet-container { width: 100%; height: 100%; }
+.suit-legend { position: absolute; left: 6px; bottom: 6px; z-index: 1000; background: rgba(5, 10, 20, .75); color: #dfe6ef; font-size: 11px; padding: 2px 8px; border-radius: 6px; }
+.suit-legend i { display: inline-block; width: 8px; height: 8px; margin: 0 3px 0 6px; vertical-align: middle; }
+.lg-base { background: #fff; border-radius: 50%; } .lg-turn { background: var(--now); border-radius: 50%; } .lg-me { background: #ff7a45; border-radius: 50%; }
+
+.suit-controls { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.suit-controls label { display: flex; gap: 8px; align-items: center; flex: 1; min-width: 200px; }
+.suit-controls input[type=range] { flex: 1; }
+.suit-controls a { color: var(--muted); }
+.suit-controls .keys { font-size: 12px; }
+.suit-speed { display: flex; gap: 4px; align-items: center; font-size: 13px; }
+.suit-speed button { padding: 2px 8px; border: 1px solid rgba(255, 255, 255, .25); border-radius: 4px; background: transparent; color: inherit; cursor: pointer; font: inherit; }
+.suit-speed button.on { background: #ff7a45; border-color: #ff7a45; color: #fff; }
+.suit-empty { max-width: 520px; margin: 48px auto; text-align: center; display: flex; flex-direction: column; gap: 10px; }
+.suit-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 820px) {
+  .suit-stage { height: calc(100vh - 210px); }
+  .suit-hud { width: 230px; padding: 8px 10px; }
+  .suit-map2d { width: 150px; height: 130px; }
+  .suit-legend { display: none; }
+  .suit-controls .keys { display: none; }
+}
+
+/* AR look: everything over the first-person view is see-through glass with thin cyan lines. */
+.suit { position: relative; --ar: rgba(120, 220, 255, .55); --glass: rgba(6, 14, 24, .32); }
+.suit-stage { height: calc(100vh - 120px); border-width: 1px; border-color: color-mix(in srgb, var(--st) 70%, transparent); }
+.suit-stage .terrain3d-ctl, .suit-stage .terrain3d .maplabel { opacity: .55; }
+.suit-stage::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 4;
+  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0, 8, 16, .45) 100%);
+  box-shadow: inset 0 0 0 1px rgba(120, 220, 255, .12); }
+.suit-hud { background: var(--glass); backdrop-filter: blur(6px) saturate(1.2); -webkit-backdrop-filter: blur(6px) saturate(1.2);
+  border: 1px solid var(--ar); border-radius: 10px; font-weight: 300; letter-spacing: .02em;
+  box-shadow: 0 0 18px rgba(80, 200, 255, .15), inset 0 0 12px rgba(80, 200, 255, .08);
+  text-shadow: 0 0 6px rgba(120, 220, 255, .55); }
+.suit-hud b, .suit-big { font-weight: 400; }
+.suit-msg { text-shadow: 0 0 10px color-mix(in srgb, var(--st) 80%, transparent); font-weight: 500; }
+.suit-sub, .suit-figs span, .suit-foot { color: rgba(200, 235, 255, .75); }
+.suit-compass .ring { fill: rgba(0, 0, 0, .1); stroke: var(--ar); stroke-width: 1.5; }
+.suit-compass .arrow { filter: drop-shadow(0 0 4px var(--st)); }
+.suit-track { background: rgba(255, 255, 255, .12); height: 4px; }
+.suit-track > div { background: rgba(120, 220, 255, .9); box-shadow: 0 0 6px rgba(120, 220, 255, .8); }
+.suit-map2d { bottom: 64px; opacity: .78; border: 1px solid var(--ar); border-radius: 10px; box-shadow: 0 0 18px rgba(80, 200, 255, .15); }
+.suit-map2d:hover { opacity: 1; }
+.suit-legend { background: var(--glass); }
+/* Controls: a slim glass bar along the bottom of the view. */
+.suit-controls { position: absolute; left: 24px; right: 24px; bottom: 22px; z-index: 6; gap: 12px; padding: 6px 12px;
+  background: var(--glass); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid var(--ar); border-radius: 999px;
+  color: #e6f6ff; font-size: 13px; font-weight: 300; }
+.suit-controls button { background: transparent; border: 1px solid var(--ar); color: #e6f6ff; border-radius: 999px; padding: 3px 12px; font: inherit; cursor: pointer; }
+.suit-controls .suit-speed button { border-radius: 999px; padding: 1px 8px; }
+.suit-controls .suit-speed button.on { background: rgba(120, 220, 255, .35); border-color: rgba(120, 220, 255, .9); }
+.suit-controls a, .suit-controls .keys { color: rgba(200, 235, 255, .7); }
+.suit-controls input[type=range] { accent-color: #4fd8ff; }
+@media (max-width: 820px) { .suit-controls { left: 8px; right: 8px; bottom: 8px; border-radius: 14px; } .suit-map2d { bottom: 96px; } }
+.suit-controls { flex-wrap: nowrap; white-space: nowrap; }
+.suit-controls label { min-width: 120px; }
+@media (max-width: 1300px) { .suit-controls .keys { display: none; } }
+/* Notices under the top-right window: newest on top, each fades out after 6 s. */
+.suit-feed { position: absolute; right: 12px; top: 84px; z-index: 5; width: 280px; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+.suit-card { background: var(--glass); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid var(--ar); border-left: 3px solid rgba(120, 220, 255, .9);
+  border-radius: 8px; padding: 6px 10px; color: #e6f6ff; font-size: 13px; font-weight: 300; text-shadow: 0 0 6px rgba(120, 220, 255, .5);
+  animation: suit-card 6s linear forwards; }
+.suit-card.warn { border-left-color: var(--soon); }
+.suit-card.bad { border-left-color: var(--now); }
+@keyframes suit-card { 0% { opacity: 0; transform: translateY(-6px); } 6% { opacity: 1; transform: none; } 85% { opacity: 1; } 100% { opacity: 0; } }
+.suit-controls .suit-obstacle { border-color: rgba(255, 90, 90, .8); color: #ffd6d6; }
+.suit-controls .suit-obstacle:disabled { opacity: .5; }
+/* Mini-map in the bottom-left corner (the notices and the question panel use the right side). */
+.suit-map2d { right: auto; left: 12px; }
+@media (max-height: 760px) and (min-width: 821px) { .suit-map2d { width: 240px; height: 170px; } }

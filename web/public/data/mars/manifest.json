@@ -1,0 +1,128 @@
+{
+ "scale": 1,
+ "tables": {
+  "rover_traverse": {
+   "files": [
+    "rover_traverse/mission=m20/data.parquet"
+   ],
+   "rows": 10456,
+   "bytes": 240754,
+   "hive": true,
+   "columns": [
+    "mission",
+    "drive",
+    "seq",
+    "sol",
+    "lat",
+    "lon",
+    "elev_m",
+    "km"
+   ],
+   "source": {
+    "label": "Mars 2020 Perseverance traverse (NASA/JPL MMGIS)",
+    "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"
+   },
+   "note": "km: distance driven since the start of the record, as computed by analog-core traverse::points"
+  },
+  "eva": {
+   "files": [
+    "eva.parquet"
+   ],
+   "rows": 368,
+   "bytes": 8631,
+   "columns": [
+    "id",
+    "country",
+    "crew",
+    "vehicle",
+    "date",
+    "hours"
+   ],
+   "source": {
+    "label": "data.nasa.gov: Extra-vehicular Activity (EVA) - US and Russia",
+    "url": "https://data.nasa.gov/docs/legacy/Extra-vehicular_Activity_EVA_-_US_and_Russia/Extra-vehicular_Activity_EVA_-_US_and_Russia_rows.csv"
+   }
+  },
+  "mars_names": {
+   "files": [
+    "mars_names.parquet"
+   ],
+   "rows": 2073,
+   "bytes": 77331,
+   "columns": [
+    "name",
+    "kind",
+    "type",
+    "lat",
+    "lon",
+    "diameter_km",
+    "origin",
+    "year",
+    "agency",
+    "link",
+    "source"
+   ],
+   "source": {
+    "label": "IAU/USGS Gazetteer of Planetary Nomenclature (Mars); landing sites; NASA crewed-landing Exploration Zones",
+    "url": "https://planetarynames.wr.usgs.gov/Page/MARS/target"
+   },
+   "note": "kind: feature (IAU name), landing (lander/rover), crewed (crewed-landing candidate). lon: degrees east, -180..180. diameter_km: IAU feature size"
+  },
+  "mars_footing": {
+   "files": [
+    "mars_footing.parquet"
+   ],
+   "rows": 326900,
+   "bytes": 443890,
+   "columns": [
+    "lat",
+    "lon",
+    "thermal_inertia",
+    "dust_cover_index"
+   ],
+   "source": {
+    "label": "Mars Odyssey THEMIS thermal inertia 100 m (NASA/ASU); MGS TES Dust Cover Index (Ruff & Christensen 2002)",
+    "url": "https://www.mars.asu.edu/data/"
+   },
+   "note": "Jezero elevation-grid cells (0.0006°). thermal_inertia in J m-2 K-1 s-1/2: ≤150 loose fines/sand, ≥400 rock/duricrust/bedrock (Putzig & Mellon 2007). dust_cover_index < 0.94 dust-mantled (Ruff & Christensen 2002)"
+  },
+  "mars_radiation": {
+   "files": [
+    "mars_radiation.parquet"
+   ],
+   "rows": 4,
+   "bytes": 1438,
+   "columns": [
+    "quantity",
+    "value",
+    "sigma",
+    "unit",
+    "source"
+   ],
+   "source": {
+    "label": "Curiosity RAD surface dose rates (Hassler et al. 2014, Science); NASA-STD-3001 limits",
+    "url": "https://doi.org/10.1126/science.1244797"
+   },
+   "note": "The figures analog-core radiation.rs uses: EVA dose = surface_dose_equivalent_rate × hours / 24"
+  },
+  "mars_weather": {
+   "files": [
+    "mars_weather.parquet"
+   ],
+   "rows": 299,
+   "bytes": 4785,
+   "columns": [
+    "sol",
+    "ltst_hour",
+    "air_temp_k",
+    "pressure_pa",
+    "samples"
+   ],
+   "source": {
+    "label": "Mars 2020 MEDA calibrated air temperature (ATS) and pressure (BAROCAP3), NASA PDS",
+    "url": "https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/PERSEVERANCE/meda.html"
+   },
+   "note": "Jezero crater, hourly means by local true solar time for 15 sols over one Mars year. air_temp_k: median of the 5 ATS sensors; pressure_pa: BAROCAP3"
+  }
+ }
+}
