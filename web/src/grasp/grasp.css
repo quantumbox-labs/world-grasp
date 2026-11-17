@@ -22,3 +22,18 @@
 
 .grasp-detail label { display: block; margin-bottom: 12px; color: var(--muted); }
 .grasp-detail label input[type=range] { width: 100%; margin-top: 4px; }
+
+/* 地球 v2: サイト切替バーとユニット追加 */
+.grasp-sitebar { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 2px; }
+.grasp-sitebar label { color: var(--muted); font-size: 12px; display: block; }
+.grasp-sitebar button.on { border-color: var(--accent); color: var(--accent); }
+.grasp-detail label input[type=number] { width: 90px; margin-left: 8px; }
+.grasp-remove { margin-top: 2px; color: var(--warn); }
+
+/* 地球 v2: EONET パネル */
+.grasp-eonet h4 .grasp-chip { margin-left: 8px; vertical-align: 1px; }
+.grasp-eonet ul { list-style: none; margin: 6px 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.grasp-eonet li { font-size: 12px; line-height: 1.5; }
+.grasp-eonet a { color: var(--blue); }
+.grasp-eonet-cat { font-weight: 600; margin-right: 6px; white-space: nowrap; }
+.grasp-eonet-date { white-space: nowrap; }

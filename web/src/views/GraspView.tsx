@@ -3,16 +3,18 @@
 // 徒歩ユニットは RouteEval の tick (余裕 margin_h)、ローバーは原典 B モードの
 // roverWalkback (徒歩帰還の予算比 ratio) が根拠。計算は grasp/units.ts に集約。
 import { useEffect, useMemo, useState } from 'react';
-import type { Core, Reach, RouteEval, RoverWalkback, World } from '../core';
+import type { Core, Reach, RouteEval, RoverWalkback, Waypoint, World } from '../core';
 import { PlanetMap, missionOverlay, type Feature, type FlyTarget } from '../map/PlanetMap';
-import { LANDING, loadHokkaidoGrid, loadWalkData, type GridData, type WalkData } from '../walk/data';
+import { LANDING, loadHokkaidoGrid, loadWalkData, type GridData, type HokkaidoSite, type WalkData } from '../walk/data';
 import { fmtH, reachImage, type Dense } from '../walk/geo';
 import { walkbackState } from '../walk/plan';
 import { useLang, useT, type T } from '../i18n';
 import {
-  EARTH_BASE, EARTH_SITE_ID, KIND_LABEL, STATUS_COLOR, earthUnits, evalRoverUnit, evalWalkUnit,
-  marsUnits, roverJudgeAt, unitReach, walkJudgeAt, type GraspUnit, type Judge, type UnitStatus,
+  EARTH_BASE, EARTH_SITE_ID, KIND_LABEL, STATUS_COLOR, customEarthUnit, earthPresetUnits,
+  evalRoverUnit, evalWalkUnit, marsUnits, roverJudgeAt, unitReach, walkJudgeAt,
+  type GraspUnit, type Judge, type UnitStatus,
 } from '../grasp/units';
+import { EonetPanel } from '../grasp/EonetPanel';
 import '../grasp/grasp.css';
 
 type Tab = 'mars' | 'earth';
@@ -54,18 +56,59 @@ export function GraspView({ core }: { core: Core }) {
   const lang = useLang();
   const [tab, setTab] = useState<Tab>('mars');
   const [data, setData] = useState<WalkData | null>(null);
-  const [hk, setHk] = useState<GridData | null>(null);
+  const [hk, setHk] = useState<{ id: string; grid: GridData } | null>(null);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [fly, setFly] = useState<FlyTarget | null>(null);
+  // 地球 v2: サイト切替と、サイトごとのユニット編集 (追加・予算変更・削除)。
+  const [siteId, setSiteId] = useState<string>(EARTH_SITE_ID);
+  const [edited, setEdited] = useState<{ siteId: string; units: GraspUnit[] } | null>(null);
+  const [addMode, setAddMode] = useState(false);
 
   useEffect(() => { loadWalkData(core).then(setData).catch(() => undefined); }, [core]);
   useEffect(() => {
-    if (tab === 'earth' && !hk) loadHokkaidoGrid(core, EARTH_SITE_ID).then(setHk).catch(() => undefined);
-  }, [core, tab, hk]);
+    if (tab === 'earth') {
+      loadHokkaidoGrid(core, siteId).then((grid) => setHk({ id: siteId, grid })).catch(() => undefined);
+    }
+  }, [core, tab, siteId]);
 
-  const units = useMemo<GraspUnit[]>(() => (tab === 'mars' ? (data ? marsUnits(data) : []) : earthUnits()),
-    [tab, data]);
+  // 地球の基地はサイトの基準点 (index.json の lat/lon。登別は従来どおり地獄谷)。
+  const sites = useMemo<HokkaidoSite[]>(() => data?.hokkaido ?? [], [data]);
+  const site = sites.find((s) => s.id === siteId) ?? null;
+  const siteBase = useMemo<Waypoint>(() => (site ? { lat: site.lat, lon: site.lon } : EARTH_BASE), [site]);
+  const hkGrid = tab === 'earth' && hk?.id === siteId ? hk.grid : null;
+  // 編集中のサイトでは編集済みリスト、それ以外はサイトの初期配置。
+  const earthList = useMemo<GraspUnit[]>(
+    () => (edited && edited.siteId === siteId ? edited.units : earthPresetUnits(siteId, siteBase)),
+    [edited, siteId, siteBase]);
+
+  const units = useMemo<GraspUnit[]>(() => (tab === 'mars' ? (data ? marsUnits(data) : []) : earthList),
+    [tab, data, earthList]);
+
+  const selectSite = (id: string) => {
+    setSiteId(id);
+    setSelectedId(null);
+    setAddMode(false);
+    const s = sites.find((x) => x.id === id);
+    if (s) setFly({ lat: s.lat, lon: s.lon, z: 13, seq: Date.now() });
+  };
+
+  const CUSTOM_COLORS = ['#b37feb', '#36cfc9', '#ff85c0', '#ffa940', '#95de64'];
+  const addUnitAt = (lat: number, lon: number) => {
+    const n = earthList.filter((u) => u.id.startsWith('custom-')).length + 1;
+    const u = customEarthUnit(`custom-${Date.now()}`, siteId, siteBase, { lat, lon }, 5,
+      CUSTOM_COLORS[(n - 1) % CUSTOM_COLORS.length], `追加隊${n}`, `Added team ${n}`);
+    setEdited({ siteId, units: [...earthList, u] });
+    setSelectedId(u.id);
+    setAddMode(false);
+  };
+  const removeUnit = (id: string) => {
+    setEdited({ siteId, units: earthList.filter((u) => u.id !== id) });
+    if (selectedId === id) setSelectedId(null);
+  };
+  const setBudget = (id: string, h: number) => {
+    setEdited({ siteId, units: earthList.map((u) => (u.id === id ? { ...u, params: { ...u.params, o2: h } } : u)) });
+  };
   const progressOf = (u: GraspUnit) => progress[u.id] ?? u.defaultProgress;
 
   // 進捗に依らない評価 (ルート評価・ローバーの home_ratio) はユニットごとに 1 回だけ。
@@ -97,9 +140,9 @@ export function GraspView({ core }: { core: Core }) {
     [core, data, selected?.unit, hk]); // eslint-disable-line react-hooks/exhaustive-deps
   const reachImg = useMemo(() => {
     if (!reach) return null;
-    const meta = tab === 'mars' ? data?.dem : hk;
+    const meta = tab === 'mars' ? data?.dem : hkGrid;
     return meta ? reachImage(reach, meta) : null;
-  }, [reach, data, hk, tab]);
+  }, [reach, data, hkGrid, tab]);
 
   const select = (unit: GraspUnit, judge: Judge | null) => {
     setSelectedId(unit.id);
@@ -131,15 +174,15 @@ export function GraspView({ core }: { core: Core }) {
       f.push({ kind: 'point', lat: judge.pos.lat, lon: judge.pos.lon, color: unit.color, radius: 8,
         tooltip: `${unit.name} — ${statusText(t, judge)}`, onClick: () => select(unit, judge) });
     }
-    const base = tab === 'mars' ? LANDING : EARTH_BASE;
+    const base = tab === 'mars' ? LANDING : siteBase;
     f.push({ kind: 'point', lat: base.lat, lon: base.lon, color: '#ffffff', radius: 7, tooltip: t('基地', 'Base') });
     return f;
-  }, [judged, reachImg, selected, tab, lang]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [judged, reachImg, selected, tab, lang, siteBase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const overlays = useMemo(() => missionOverlay(core, tab as World), [core, tab]);
   const view: [number, number, number] = tab === 'mars'
     ? [LANDING.lat, LANDING.lon - 0.015, 13]
-    : [EARTH_BASE.lat, EARTH_BASE.lon, 13];
+    : [siteBase.lat, siteBase.lon, 13];
   const sel = selected;
   const selJudge = sel?.judge ?? null;
 
@@ -150,10 +193,26 @@ export function GraspView({ core }: { core: Core }) {
         <p className="muted">{t('原典 WALKBACK のエンジン (analog-core) の判定をそのまま並べたプロトタイプ。ユニットを選んで進捗スライダを動かすと、現在位置での帰還判定が追従します。', 'A prototype that lists the original WALKBACK engine (analog-core) verdicts as they are. Pick a unit and move its progress slider: the return verdict at that position follows.')}</p>
         <div className="tabs" role="group" aria-label={t('戦域', 'Theatre')}>
           <button className={tab === 'mars' ? 'on' : ''} onClick={() => setTab('mars')}>🔴 {t('火星 Jezero', 'Mars · Jezero')}</button>
-          <button className={tab === 'earth' ? 'on' : ''} onClick={() => setTab('earth')}>🌏 {t('地球 登別', 'Earth · Noboribetsu')}</button>
+          <button className={tab === 'earth' ? 'on' : ''} onClick={() => setTab('earth')}>🌏 {t('地球', 'Earth')}</button>
         </div>
         {tab === 'mars' && !data && <p className="muted">{t('火星のデータを読み込み中…', 'Loading Mars data…')}</p>}
-        {tab === 'earth' && !hk && <p className="muted">{t('登別の地形データ (NASADEM) を読み込み中…', 'Loading the Noboribetsu terrain (NASADEM)…')}</p>}
+        {tab === 'earth' && !hkGrid && <p className="muted">{t('地形データ (NASADEM) を読み込み中…', 'Loading terrain (NASADEM)…')}</p>}
+
+        {tab === 'earth' && (
+          <div className="grasp-sitebar">
+            <label>{t('サイト (北海道アナログ候補地)', 'Site (Hokkaido analog sites)')}
+              <select value={siteId} onChange={(e) => selectSite(e.target.value)} aria-label={t('サイト選択', 'Select site')}>
+                {(sites.length ? sites : [{ id: EARTH_SITE_ID, name: '登別 地獄谷', lat: EARTH_BASE.lat, lon: EARTH_BASE.lon, rows: 0, cols: 0, nulls: 0 }]).map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </label>
+            <button className={addMode ? 'on' : ''} onClick={() => setAddMode((m) => !m)}>
+              {addMode ? t('✕ 追加をやめる', '✕ Cancel adding') : t('＋ ユニット追加 (地図クリック)', '＋ Add unit (click the map)')}
+            </button>
+            {addMode && <p className="muted">{t('地図をクリックした地点を目的地として徒歩隊を追加します。行動可能時間は追加後、詳細で変更できます。', 'Click the map to add a foot team headed for that point. Its action-time budget can be changed afterwards in the details.')}</p>}
+          </div>
+        )}
 
         {alerts.length > 0 && (
           <div className="card grasp-alerts">
@@ -217,6 +276,14 @@ export function GraspView({ core }: { core: Core }) {
               <input type="range" min={0} max={100} step={1} value={Math.round(progressOf(sel.unit) * 100)}
                 onChange={(e) => setProgress((p) => ({ ...p, [sel.unit.id]: +e.target.value / 100 }))} />
             </label>
+            {sel.unit.world === 'earth' && selJudge.mode === 'walk' && (
+              <label>{t('行動可能時間', 'Action time budget')} <b>{sel.unit.params.o2} h</b>
+                <input type="range" min={1} max={12} step={0.5} value={sel.unit.params.o2}
+                  onChange={(e) => setBudget(sel.unit.id, +e.target.value)} />
+                <input type="number" min={0.5} max={24} step={0.5} value={sel.unit.params.o2} aria-label={t('行動可能時間 (h)', 'Action time (h)')}
+                  onChange={(e) => { const v = +e.target.value; if (v > 0) setBudget(sel.unit.id, v); }} />
+              </label>
+            )}
             <div className="kv"><span>{t('現在位置', 'Position')}</span><b>{selJudge.pos.lat.toFixed(4)}, {selJudge.pos.lon.toFixed(4)}</b></div>
             {selJudge.mode === 'walk' ? (
               <>
@@ -239,12 +306,18 @@ export function GraspView({ core }: { core: Core }) {
                 <p className="muted">{t('ローバー自体の走行可否ではなく「ここで故障したら乗員が歩いて基地へ帰れるか」の判定です（原典 #11 のローバー故障チェックと同じ計算）。', 'Not whether the rover can drive on: whether the crew could walk back to base if it broke down here — the same check as the original #11 rover-breakdown mode.')}</p>
               </>
             )}
+            {tab === 'earth' && (
+              <button className="grasp-remove" onClick={() => removeUnit(sel.unit.id)}>{t('🗑 このユニットを削除', '🗑 Remove this unit')}</button>
+            )}
           </div>
         )}
+        {tab === 'earth' && <EonetPanel />}
         <p className="muted">{t('数値はすべて原典エンジン (analog-core) の出力です。地球モードでは足場・気温 (Jezero 専用データ) は未適用で、行動可能時間を同じ effort-hours 予算で数えます。', 'Every number comes from the original engine (analog-core). On Earth the footing / air-temperature corrections (Jezero-only data) are not applied; action time is counted in the same effort-hours budget.')}</p>
       </aside>
       <div className="maps single">
-        <PlanetMap core={core} world={tab} view={view} features={features} fly={fly} overlays={overlays} />
+        <PlanetMap core={core} world={tab} view={view} features={features} fly={fly} overlays={overlays}
+          onClick={tab === 'earth' && addMode ? addUnitAt : undefined}
+          crosshair={tab === 'earth' && addMode} />
       </div>
     </section>
   );

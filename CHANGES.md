@@ -17,6 +17,20 @@
 |---|---|
 | `web/src/App.tsx` | `GraspView` の import、View 型に `'grasp'` 追加、parseHash に `#grasp` 分岐、ナビに「🛰 状況把握」リンク、view-host の div を1つ追加。それ以外は無変更 |
 
+## 地球モード v2 (2026-11-17 追加)
+
+#grasp の地球タブのみ拡張 (火星タブは無変更)。詳細は `../EARTH_V2.md`。
+
+| ファイル | 変更 |
+|---|---|
+| `web/src/views/GraspView.tsx` | サイトセレクタ (index.json 全14サイト、切替でグリッド再登録・基地移動・ユニットリセット)、地図クリックでユニット追加、行動可能時間の編集、ユニット削除、EONET パネルを追加 |
+| `web/src/grasp/units.ts` | `earthPresetUnits` (サイト別初期配置) と `customEarthUnit` (クリック追加用) を追加 |
+| `web/src/grasp/EonetPanel.tsx` | 新規: NASA EONET イベント一覧 (ライブ/サンプル表示付き) |
+| `web/src/grasp/eonet.ts` | 新規: EONET v3 取得とパース、失敗時は同梱サンプルへフォールバック |
+| `web/src/grasp/eonet-sample.json` | 新規: API と同じ形の同梱サンプル |
+| `web/src/grasp/grasp.css` | サイトバー / EONET パネル / 削除ボタンのスタイル追加 |
+| `web/tsconfig.json` | `resolveJsonModule: true` を追加 (サンプル JSON の import 用) |
+
 ## 設計上の注意
 
 - 判定の数値はすべて原典エンジン (analog-core) の出力。距離×係数のような独自の近似式は使っていない。

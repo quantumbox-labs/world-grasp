@@ -214,3 +214,39 @@ export function earthUnits(): GraspUnit[] {
     },
   ];
 }
+
+// ---------- 地球 v2: サイト切替とユニット追加 ----------
+
+/**
+ * サイト切替時の初期配置。登別は従来の earthUnits() (専用ルート) をそのまま使い、
+ * 他サイトは基地 (index.json の地点 = グリッドの基準点) から登別 A/B と同じ方角・予算で
+ * 置いた徒歩隊にする。判定はどちらも同じ evalWalkUnit (core.evaluateRoute) の出力。
+ */
+export function earthPresetUnits(siteId: string, base: Waypoint): GraspUnit[] {
+  if (siteId === EARTH_SITE_ID) return earthUnits();
+  const mk = (id: string, name: string, en: string, dLat: number, dLon: number,
+    speed: number, o2: number, color: string, progress: number): GraspUnit => ({
+    id, name, en, kind: 'walker', world: 'earth', grid: `hk:${siteId}`, base,
+    route: [base, { lat: base.lat + dLat, lon: base.lon + dLon }],
+    params: { speed, o2, water: 999, reserve: 20, work: 0.5 },
+    color, defaultProgress: progress,
+  });
+  return [
+    mk(`walker-a-${siteId}`, '徒歩隊A', 'Team A', 0.0045, 0.0122, 3.5, 6, '#69c0ff', 1),
+    mk(`walker-b-${siteId}`, '徒歩隊B', 'Team B', 0.0117, -0.0085, 3, 4, '#ffd666', 0.7),
+  ];
+}
+
+/**
+ * 地図クリックで足す徒歩隊。目的地 = クリック地点で、初期状態は目的地に到達した位置
+ * (progress 1) で判定する。予算は EvaParams の o2 欄 = 行動可能時間 (h) で、後から変更できる。
+ */
+export function customEarthUnit(id: string, siteId: string, base: Waypoint, dest: Waypoint,
+  budgetH: number, color: string, name: string, en: string): GraspUnit {
+  return {
+    id, name, en, kind: 'walker', world: 'earth', grid: `hk:${siteId}`, base,
+    route: [base, dest],
+    params: { speed: 3.5, o2: budgetH, water: 999, reserve: 20, work: 0.5 },
+    color, defaultProgress: 1,
+  };
+}
